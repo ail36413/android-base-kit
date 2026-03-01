@@ -1,3 +1,77 @@
 <resources>
+
     <string name="app_name">android-base-kit</string>
+
+    <string name="net_status">状态</string>
+    <string name="btn_get">GET 请求示例</string>
+    <string name="btn_download">下载示例</string>
+    <string name="get_success">GET 成功: %1$d 条</string>
+    <string name="get_tech_fail">GET 技术失败: %1$s</string>
+    <string name="get_business_fail">GET 业务失败: %1$d, %2$s</string>
+    <string name="download_progress">下载进度: %1$d%%</string>
+    <string name="download_success">下载成功: %1$s</string>
+    <string name="download_fail">下载失败: %1$s</string>
+    <string name="download_business_fail">下载业务失败: %1$d, %2$s</string>
+    <string name="btn_post">POST 请求示例</string>
+    <string name="btn_upload_single">单文件上传 示例</string>
+    <string name="btn_upload_multi">多文件上传 示例</string>
+    <string name="btn_custom_header">自定义 Header 示例</string>
+    <string name="btn_timeout">方法级超时 示例</string>
+    <string name="btn_raw">executeRawRequest 示例</string>
+    <string name="btn_cancel_download">取消下载 示例</string>
+    <string name="btn_hash_download">哈希校验下载 示例</string>
+    <string name="btn_retry">重试示例</string>
+    <string name="btn_poll">轮询示例</string>
+    <string name="btn_pay">Pay BaseUrl 示例</string>
+    <string name="btn_token_demo">Token 刷新示例</string>
+
+    <!-- NetActivity status strings -->
+    <string name="post_in_progress">POST 请求中...</string>
+    <string name="post_success">POST 成功</string>
+    <string name="post_error_fmt">POST 错误: %1$s</string>
+
+    <string name="upload_single_in_progress">单文件上传中...</string>
+    <string name="upload_success">上传成功</string>
+    <string name="upload_error_fmt">上传失败: %1$s</string>
+
+    <string name="upload_multi_in_progress">多文件上传中...</string>
+    <string name="upload_multi_success">多文件上传成功</string>
+    <string name="upload_multi_error_fmt">多文件上传失败: %1$s</string>
+
+    <string name="custom_header_in_progress">自定义 Header 请求中...</string>
+    <string name="custom_header_success">自定义 Header 请求成功</string>
+
+    <string name="timeout_in_progress">方法级超时调用中...</string>
+    <string name="timeout_done">超时调用返回</string>
+
+    <string name="raw_in_progress">Raw 请求中...</string>
+    <string name="raw_success">Raw 成功</string>
+    <string name="raw_tech_fmt">Raw 技术失败: %1$s</string>
+    <string name="raw_business_fmt">Raw 业务失败: %1$d</string>
+
+    <string name="cancel_download_sent">取消下载请求已发</string>
+
+    <string name="hash_download_in_progress">哈希校验下载中...</string>
+    <string name="hash_download_success">哈希下载成功: %1$s</string>
+    <string name="hash_download_fail_fmt">哈希下载失败: %1$s</string>
+
+    <string name="retry_in_progress">重试示例中...</string>
+    <string name="retry_success">Retry 成功</string>
+    <string name="retry_error_fmt">Retry 错误: %1$s</string>
+    <string name="retry_thrown_fmt">Retry 抛出异常: %1$s</string>
+
+    <string name="poll_in_progress">轮询示例中...</string>
+    <string name="poll_success">轮询成功: %1$s</string>
+    <string name="poll_tech_fmt">轮询技术失败: %1$s</string>
+    <string name="poll_business_fmt">轮询业务失败: %1$d</string>
+
+    <!-- Token demo -->
+    <string name="token_demo_not_configured">未配置 TokenProvider，无法演示刷新</string>
+    <string name="token_demo_current">当前 token=%1$s，开始演示...</string>
+    <string name="token_demo_success">请求成功，data=%1$s，当前 token=%2$s</string>
+    <string name="token_demo_business_fail">业务失败: %1$d, %2$s，当前 token=%3$s</string>
+    <string name="token_demo_tech_fail">技术失败: %1$s，当前 token=%2$s</string>
+    <string name="token_demo_error">调用异常或被中断，当前 token=%1$s</string>
+
+
 </resources>

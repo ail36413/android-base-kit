@@ -50,5 +50,6 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     implementation(project(":lib_image"))
+    implementation(project(":lib_network"))
 
 }

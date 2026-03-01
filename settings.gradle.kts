@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "android-base-kit"
 include(":app")
 include(":lib_image")
+include(":lib_network")

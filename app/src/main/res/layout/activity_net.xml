@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/net_status"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_get"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_get"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/btn_post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_post"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_upload_single"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_upload_single"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_upload_multi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_upload_multi"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_custom_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_custom_header"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_timeout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_timeout"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_raw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_raw"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_download"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_cancel_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancel_download"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_hash_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_hash_download"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_retry"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_poll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_poll"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_pay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_pay"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btn_status_model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="status 返回模型示例"
+            android:layout_marginTop="8dp" />
+
+        <!-- Token refresh demo button -->
+        <Button
+            android:id="@+id/btn_token_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Token 刷新示例"
+            android:layout_marginTop="8dp" />
+
+        <ImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/net_status"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+</ScrollView>

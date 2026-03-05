@@ -1,13 +1,31 @@
 # 图片加载库
 
-## 依赖说明
+## 依赖说明（放在最前）
 
-本库基于以下依赖构建：
+本库基于以下依赖构建（版本来自项目版本目录）：
 
-| 依赖 | 版本    | 说明 |
-|------|-------|------|
-| [Glide](https://github.com/bumptech/glide) | 5.0.0+ | 图片加载核心库 |
-| [glide-transformations](https://github.com/wasabeef/glide-transformations) | 4.3.0+ | 图片变换效果库（用于模糊、灰度等效果） |
+| 依赖 | 版本 | 说明 |
+|------|------|------|
+| [Glide](https://github.com/bumptech/glide) | `5.0.5` | 图片加载核心库 |
+| [glide-transformations](https://github.com/wasabeef/glide-transformations) | `4.3.0` | 图片变换效果库（模糊、灰度等） |
+
+Gradle（使用版本目录）示例：
+
+```kotlin
+dependencies {
+    implementation(libs.glide)
+    implementation(libs.glide.transformations)
+}
+```
+
+Gradle（直接写坐标）示例：
+
+```kotlin
+dependencies {
+    implementation("com.github.bumptech.glide:glide:5.0.5")
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
+}
+```
 
 ## 初始化说明
 

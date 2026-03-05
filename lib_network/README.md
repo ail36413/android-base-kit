@@ -1,5 +1,39 @@
 # lib_network
 
+## 依赖说明（放在最前）
+
+`lib_network` 依赖以下核心组件（版本来自项目版本目录）：
+
+| 依赖 | 版本 | 说明 |
+|---|---|---|
+| Kotlin | `2.0.21` | 语言版本 |
+| Hilt | `2.51` | 依赖注入（必需） |
+| OkHttp | `4.12.0` | HTTP/WebSocket 底层 |
+| Retrofit | `2.11.0` | 接口请求封装 |
+| Retrofit Gson Converter | `2.11.0` | JSON 解析转换 |
+| Coroutines | `1.8.1` | 异步协程支持 |
+
+根工程插件（示例）：
+
+```kotlin
+plugins {
+    id("com.google.dagger.hilt.android") version "2.51" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.28" apply false
+}
+```
+
+app 模块依赖（示例）：
+
+```kotlin
+dependencies {
+    implementation("com.google.dagger:hilt-android:2.51")
+    ksp("com.google.dagger:hilt-android-compiler:2.51")
+
+    // 本地模块接入
+    implementation(project(":lib_network"))
+}
+```
+
 Android 网络基础库，支持 HTTP（OkHttp + Retrofit）与 WebSocket（多连接、心跳、重连、离线补发等）。
 
 ## 目录（从简单到复杂）

@@ -2,6 +2,9 @@
 
 ## 依赖说明（放在最前）
 
+- 版本来源：`gradle/libs.versions.toml`
+- 升级建议：以版本目录为准统一升级，避免 README 与实际依赖漂移
+
 `lib_network` 依赖以下核心组件（版本来自项目版本目录）：
 
 | 依赖 | 版本 | 说明 |
@@ -30,6 +33,22 @@ dependencies {
     ksp("com.google.dagger:hilt-android-compiler:2.51")
 
     // 本地模块接入
+    implementation(project(":lib_network"))
+}
+```
+
+使用版本目录（`libs.versions.toml`）管理依赖示例：
+
+```kotlin
+dependencies {
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
     implementation(project(":lib_network"))
 }
 ```

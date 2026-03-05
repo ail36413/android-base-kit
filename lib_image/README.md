@@ -1,5 +1,10 @@
 # 图片加载库
 
+## 文档导航
+
+- 仓库总览：[`README.md`](../README.md)
+- 网络库文档：[`lib_network/README.md`](../lib_network/README.md)
+
 ## 依赖说明（放在最前）
 
 - 版本来源：`gradle/libs.versions.toml`

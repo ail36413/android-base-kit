@@ -1,5 +1,10 @@
 # lib_network
 
+## 文档导航
+
+- 仓库总览：[`README.md`](../README.md)
+- 图片库文档：[`lib_image/README.md`](../lib_image/README.md)
+
 ## 依赖说明（放在最前）
 
 - 版本来源：`gradle/libs.versions.toml`

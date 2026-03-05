@@ -1,4 +1,4 @@
-package com.bohai.android_base_kit.auth
+package com.ail.android_base_kit.network.http.auth
 
 import com.ail.android_base_kit.App
 import com.ail.lib_network.http.auth.TokenProvider

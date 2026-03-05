@@ -1,10 +1,9 @@
-package com.bohai.model
+package com.ail.android_base_kit.network.http.model
 
-import com.bohai.android_base_kit.model.StatusResponse
+import com.ail.lib_network.http.model.GlobalResponse
 
 /**
  * 全局默认返回模型别名。
- * 只需在这里切换类型，所有接口统一生效。
+ * 字段映射在 NetworkConfig.responseFieldMapping 中统一配置。
  */
-typealias ApiResponse<T> = StatusResponse<T>
-
+typealias ApiResponse<T> = GlobalResponse<T>

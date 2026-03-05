@@ -41,7 +41,7 @@
             android:name=".network.websocket.WebSocketDemoActivity"
             android:exported="false" />
         <activity
-            android:name="com.bohai.android_base_kit.http.NetActivity"
+            android:name=".network.http.http.NetActivity"
             android:exported="false" />
 
         <service android:name=".network.websocket.WebSocketService"
@@ -51,7 +51,7 @@
 
         <!-- Demo login activity used by global 401 handler -->
         <activity
-            android:name="com.bohai.android_base_kit.LoginActivity"
+            android:name=".network.http.LoginActivity"
             android:exported="false" />
 
     </application>

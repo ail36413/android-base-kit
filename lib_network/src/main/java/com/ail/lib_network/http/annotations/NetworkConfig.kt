@@ -1,5 +1,6 @@
 package com.ail.lib_network.http.annotations
 
+import com.ail.lib_network.http.model.ResponseFieldMapping
 import java.io.File
 
 /**
@@ -22,6 +23,7 @@ import java.io.File
  * @param enableRetryInterceptor 如果为 true，NetworkModule 会在 OkHttpClient 中注册 RetryInterceptor
  * @param retryMaxAttempts RetryInterceptor 的最大重试次数（默认 2）
  * @param retryInitialBackoffMs Retry 初始退避毫秒数（默认 300ms）
+ * @param responseFieldMapping 全局响应字段映射，默认按 {code,msg,data} 解析
  */
 data class NetworkConfig(
     val baseUrl: String,
@@ -35,7 +37,8 @@ data class NetworkConfig(
     val cacheSize: Long? = null,
     val enableRetryInterceptor: Boolean = false,
     val retryMaxAttempts: Int = 2,
-    val retryInitialBackoffMs: Long = 300L
+    val retryInitialBackoffMs: Long = 300L,
+    val responseFieldMapping: ResponseFieldMapping = ResponseFieldMapping()
 ) {
 
     init {
@@ -44,6 +47,9 @@ data class NetworkConfig(
         }
         require(baseUrl.startsWith("http://") || baseUrl.startsWith("https://")) {
             "NetworkConfig.baseUrl must start with http:// or https://, actual: $baseUrl"
+        }
+        require(baseUrl.endsWith('/')) {
+            "NetworkConfig.baseUrl must end with '/'. Retrofit baseUrl requires trailing slash, actual: $baseUrl"
         }
         require(connectTimeout > 0) {
             "NetworkConfig.connectTimeout must be > 0 seconds, actual: $connectTimeout"

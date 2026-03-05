@@ -3,7 +3,6 @@ package com.ail.lib_network.http.exception
 import com.ail.lib_network.http.util.NetErrorMessage
 import com.google.gson.JsonParseException
 import com.google.gson.JsonSyntaxException
-import com.google.gson.stream.MalformedJsonException
 import org.json.JSONException
 import retrofit2.HttpException
 import java.net.ConnectException
@@ -16,8 +15,8 @@ import javax.net.ssl.SSLException
  * 职责：将各种原始 Throwable 转换为基础库定义的 [BaseNetException]
  *
  * 说明：
- * - 推荐上层使用 [NetworkResult] 的 BusinessFailure 来表达业务失败场景；
- * - 为了向后兼容，若业务代码显式抛出 [BusinessFailureException]，此处会直接返回该异常实例。
+ * - 推荐上层使用 NetworkResult.BusinessFailure 表达业务失败场景；
+ * - 若业务代码显式抛出 [BusinessFailureException]，会在上层 as BaseNetException 路径返回。
  */
 object ExceptionHandle {
 
@@ -28,10 +27,6 @@ object ExceptionHandle {
         return when (e) {
             // 已经是基础库定义的异常，直接返回
             is BaseNetException -> e
-
-            // 业务失败异常：通常不建议上层直接抛出，而是通过 NetworkResult.BusinessFailure 表达；
-            // 但为了兼容已有代码，这里做显式转换，避免被归类为 UnknownNetException。
-            is BusinessFailureException -> e
 
             is SocketTimeoutException -> {
                 val code = -1
@@ -57,6 +52,14 @@ object ExceptionHandle {
                     cause = e
                 )
             }
+            is java.util.concurrent.CancellationException -> {
+                val code = -999
+                RequestException(
+                    code = code,
+                    message = NetErrorMessage.msg(code, "请求已取消"),
+                    cause = e
+                )
+            }
 
             is HttpException -> {
                 val code = e.code()
@@ -67,12 +70,6 @@ object ExceptionHandle {
             }
 
             is JsonParseException, is JsonSyntaxException, is JSONException -> {
-                ParseException(
-                    message = NetErrorMessage.msg(-1001, "数据解析异常，请检查数据结构"),
-                    cause = e
-                )
-            }
-            is MalformedJsonException -> {
                 ParseException(
                     message = NetErrorMessage.msg(-1001, "数据解析异常，请检查数据结构"),
                     cause = e

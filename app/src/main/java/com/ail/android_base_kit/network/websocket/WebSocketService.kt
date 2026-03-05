@@ -57,7 +57,7 @@ class WebSocketService : Service() {
 
     private fun connectWebSocket() {
         wsManager.connectDefault(
-            url = "wss://echo.websocket.org", // 替换为你的地址
+            url = "wss://ws.postman-echo.com/raw",
             listener = object : WebSocketManager.WebSocketListener {
                 override fun onOpen(connectionId: String) {
                 }

@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.widget.Button
 import com.ail.android_base_kit.image.ImageDemoActivity
-import com.bohai.android_base_kit.http.NetActivity
+import com.ail.android_base_kit.network.http.http.NetActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,15 +20,14 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        findViewById<Button>(R.id.btnImageDemo).setOnClickListener {
-            val intent = android.content.Intent(this, ImageDemoActivity::class.java)
-            startActivity(intent)
+        findViewById<CardView>(R.id.cardImage).setOnClickListener {
+            startActivity(Intent(this, ImageDemoActivity::class.java))
         }
-        findViewById<Button>(R.id.btn_network_demo).setOnClickListener {
-            startActivity(Intent(this, com.ail.android_base_kit.network.websocket.WebSocketDemoActivity::class.java))
-        }
-        findViewById<Button>(R.id.btnHttpDemo).setOnClickListener {
+        findViewById<CardView>(R.id.cardHttp).setOnClickListener {
             startActivity(Intent(this, NetActivity::class.java))
+        }
+        findViewById<CardView>(R.id.cardWebSocket).setOnClickListener {
+            startActivity(Intent(this, com.ail.android_base_kit.network.websocket.WebSocketDemoActivity::class.java))
         }
     }
 }

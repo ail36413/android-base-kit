@@ -192,11 +192,22 @@ internal class WebSocketClientImpl(
 
     fun sendMessage(text: String): Boolean {
         return when (currentState) {
-            WebSocketManager.State.CONNECTED -> webSocket?.send(text) ?: false
+            WebSocketManager.State.CONNECTED -> {
+                val result = webSocket?.send(text) ?: false
+                if (result) {
+                    WebSocketLogger.d(connectionId, "发送文本消息：$text")
+                } else {
+                    WebSocketLogger.w(connectionId, "发送文本消息失败，WebSocket 已断开")
+                }
+                result
+            }
             else -> {
                 if (config.enableMessageReplay) {
-                    enqueueMessage(QueuedMessage.Text(text))
+                    val enqueued = enqueueMessage(QueuedMessage.Text(text))
+                    WebSocketLogger.d(connectionId, "当前未连接，文本消息已加入离线队列，入队${if (enqueued) "成功" else "失败"}，队列大小：${messageQueue.size}")
+                    enqueued
                 } else {
+                    WebSocketLogger.w(connectionId, "当前未连接，文本消息已丢弃（未开启离线补发）")
                     false
                 }
             }
@@ -207,16 +218,26 @@ internal class WebSocketClientImpl(
         return when (currentState) {
             WebSocketManager.State.CONNECTED -> {
                 try {
-                    webSocket?.send(ByteString.of(*bytes)) ?: false
+                    val result = webSocket?.send(ByteString.of(*bytes)) ?: false
+                    if (result) {
+                        WebSocketLogger.d(connectionId, "发送二进制消息，大小：${bytes.size} bytes")
+                    } else {
+                        WebSocketLogger.w(connectionId, "发送二进制消息失败，WebSocket 已断开")
+                    }
+                    result
                 } catch (e: Exception) {
+                    WebSocketLogger.w(connectionId, "发送二进制消息异常：${e.message}", e)
                     false
                 }
             }
 
             else -> {
                 if (config.enableMessageReplay) {
-                    enqueueMessage(QueuedMessage.Binary(bytes))
+                    val enqueued = enqueueMessage(QueuedMessage.Binary(bytes))
+                    WebSocketLogger.d(connectionId, "当前未连接，二进制消息已加入离线队列，入队${if (enqueued) "成功" else "失败"}，队列大小：${messageQueue.size}")
+                    enqueued
                 } else {
+                    WebSocketLogger.w(connectionId, "当前未连接，二进制消息已丢弃（未开启离线补发）")
                     false
                 }
             }
@@ -246,11 +267,13 @@ internal class WebSocketClientImpl(
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 lastPongTime = System.currentTimeMillis()
+                WebSocketLogger.d(connectionId, "收到文本消息：$text")
                 dispatchCallback { listener.onMessage(connectionId, text) }
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
                 lastPongTime = System.currentTimeMillis()
+                WebSocketLogger.d(connectionId, "收到二进制消息，大小：${bytes.size} bytes，内容(hex)：${bytes.hex()}")
                 dispatchCallback { listener.onMessage(connectionId, bytes.toByteArray()) }
             }
 

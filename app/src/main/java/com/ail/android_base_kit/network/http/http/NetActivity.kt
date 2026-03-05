@@ -1,4 +1,4 @@
-package com.bohai.android_base_kit.http
+package com.ail.android_base_kit.network.http.http
 
 import android.Manifest
 import android.net.Uri
@@ -9,13 +9,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import com.ail.android_base_kit.R
-import com.bohai.UserService
-import com.bohai.apis.DemoApi
-import com.bohai.apis.PayApi
-import com.bohai.apis.UploadApi
-import com.bohai.model.CreateUserRequest
-import com.bohai.android_base_kit.model.StatusResponse
+import com.ail.android_base_kit.network.http.UserService
+import com.ail.android_base_kit.network.http.http.apis.DemoApi
+import com.ail.android_base_kit.network.http.http.apis.PayApi
+import com.ail.android_base_kit.network.http.http.apis.UploadApi
+import com.ail.android_base_kit.network.http.model.CreateUserRequest
+import com.ail.android_base_kit.network.http.model.StatusResponse
+import com.ail.android_base_kit.network.http.model.ResponseMappingPresets
+import com.ail.lib_network.http.annotations.NetworkConfigProvider
 import okhttp3.ResponseBody
 import com.ail.lib_network.http.model.NetworkResult
 import com.ail.lib_network.http.model.ProgressInfo
@@ -40,11 +43,12 @@ import javax.inject.Inject
 // 新增 imports for token demo
 import com.ail.lib_network.http.auth.TokenProvider
 import java.util.Optional
-import com.bohai.util.TokenRefreshHelper
-import com.bohai.auth.AppTokenProvider
-import com.bohai.model.User
+import com.ail.android_base_kit.network.http.util.TokenRefreshHelper
+import com.ail.android_base_kit.network.http.http.auth.AppTokenProvider
+import com.ail.android_base_kit.network.http.model.User
 import kotlinx.coroutines.Job
 import java.io.IOException
+import androidx.annotation.StringRes
 
 @AndroidEntryPoint
 class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
@@ -67,6 +71,9 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     @Inject
     lateinit var tokenProviderOptional: Optional<TokenProvider>
 
+    @Inject
+    lateinit var networkConfigProvider: NetworkConfigProvider
+
     private lateinit var tvStatus: TextView
     private lateinit var btnGet: Button
     private lateinit var btnPost: Button
@@ -84,6 +91,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private lateinit var btnTokenDemo: Button
     private lateinit var btnStatusModel: Button
     private lateinit var ivPreview: ImageView
+    private lateinit var switchResponseMapping: SwitchCompat
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -93,6 +101,10 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     // holder for cancel job
     private var currentCancelJob: Job? = null
+
+    private companion object {
+        const val DEMO_IMAGE_URL = "https://picsum.photos/1200/800"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,6 +127,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         btnTokenDemo = findViewById(R.id.btn_token_demo)
         btnStatusModel = findViewById(R.id.btn_status_model)
         ivPreview = findViewById(R.id.iv_preview)
+        switchResponseMapping = findViewById(R.id.switch_response_mapping)
 
         btnGet.setOnClickListener { doGet() }
         btnPost.setOnClickListener { doPost() }
@@ -137,6 +150,16 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         btnPay.setOnClickListener { doPayExample() }
         btnTokenDemo.setOnClickListener { doTokenRefreshDemo() }
         btnStatusModel.setOnClickListener { doStatusModelDemo() }
+
+        setupResponseMappingSwitch()
+    }
+
+    private fun setStatus(@StringRes resId: Int, vararg args: Any) {
+        tvStatus.text = getString(resId, *args)
+    }
+
+    private fun setStatusText(@StringRes resId: Int) {
+        tvStatus.text = getString(resId)
     }
 
     private fun requestPermissionsIfNeeded() {
@@ -145,7 +168,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun doGet() {
-        tvStatus.text = "状态"
+        setStatusText(R.string.status_default)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest {
                 userService.checkStatus(1)
@@ -153,35 +176,35 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { data ->
-                        tvStatus.text = "GET 成功: ${data?.size ?: 0} 条"
+                        setStatus(R.string.get_success, data?.size ?: 0)
                     }
                     .onTechnicalFailure { e ->
-                        tvStatus.text = "GET 技术失败: ${e.message}"
+                        setStatus(R.string.get_tech_fail, e.message ?: "")
                     }
                     .onBusinessFailure { code, msg ->
-                        tvStatus.text = "GET 业务失败: $code, $msg"
+                        setStatus(R.string.get_business_fail, code, msg)
                     }
             }
         }
     }
 
     private fun doPost() {
-        tvStatus.text = "POST 请求中..."
+        setStatusText(R.string.post_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest<User> {
                 demoApi.createUser(CreateUserRequest("demo", 18))
             }
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { tvStatus.text = "POST 成功: ${it?.toString() ?: ""}" }
-                    .onTechnicalFailure { tvStatus.text = "POST 错误: ${it.message}" }
-                    .onBusinessFailure { code, msg -> tvStatus.text = "POST 业务失败: $code, $msg" }
+                    .onSuccess { setStatus(R.string.post_success_fmt, it?.toString() ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.post_error_fmt, it.message ?: "") }
+                    .onBusinessFailure { code, msg -> setStatus(R.string.post_business_fail_fmt, code, msg) }
             }
         }
     }
 
     private fun doUploadSingle() {
-        tvStatus.text = "单文件上传中..."
+        setStatusText(R.string.upload_single_in_progress)
         val dir = filesDir
         val demoFile = File(dir, "upload_demo.txt")
         if (!demoFile.exists()) demoFile.writeText("demo")
@@ -195,14 +218,14 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             ) { part -> uploadApi.uploadFile(part) }
 
             launch(Dispatchers.Main) {
-                result.onSuccess { tvStatus.text = "上传成功" }
-                    .onTechnicalFailure { tvStatus.text = "上传失败: ${it.message}" }
+                result.onSuccess { setStatusText(R.string.upload_success) }
+                    .onTechnicalFailure { setStatus(R.string.upload_error_fmt, it.message ?: "") }
             }
         }
     }
 
     private fun doUploadMulti() {
-        tvStatus.text = "多文件上传中..."
+        setStatusText(R.string.upload_multi_in_progress)
         val dir = filesDir
         val f1 = File(dir, "upload1.txt").apply { if (!exists()) writeText("1") }
         val f2 = File(dir, "upload2.txt").apply { if (!exists()) writeText("2") }
@@ -218,84 +241,84 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 uploadApi.uploadMultiple(parts, fs)
             }
             launch(Dispatchers.Main) {
-                result.onSuccess { tvStatus.text = "多文件上传成功" }
-                    .onTechnicalFailure { tvStatus.text = "多文件上传失败: ${it.message}" }
+                result.onSuccess { setStatusText(R.string.upload_multi_success) }
+                    .onTechnicalFailure { setStatus(R.string.upload_multi_error_fmt, it.message ?: "") }
             }
         }
     }
 
     private fun doCustomHeader() {
-        tvStatus.text = "自定义 Header 请求中..."
+        setStatusText(R.string.custom_header_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest<User> {
                 demoApi.createUserWithHeader("key--123", CreateUserRequest("withHeader", 1))
             }
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { tvStatus.text = "自定义 Header 请求成功: ${it?.toString() ?: ""}" }
-                    .onTechnicalFailure { tvStatus.text = "自定义 Header 技术失败: ${it.message}" }
-                    .onBusinessFailure { code, msg -> tvStatus.text = "自定义 Header 业务失败: $code, $msg" }
+                    .onSuccess { setStatus(R.string.custom_header_success_fmt, it?.toString() ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.custom_header_tech_fail_fmt, it.message ?: "") }
+                    .onBusinessFailure { code, msg -> setStatus(R.string.custom_header_business_fail_fmt, code, msg) }
             }
         }
     }
 
     private fun doTimeoutCall() {
-        tvStatus.text = "方法级超时调用中..."
+        setStatusText(R.string.timeout_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest {
                 demoApi.createUserTimeout(CreateUserRequest("timeout", 2))
             }
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { tvStatus.text = "超时调用返回: ${it?.toString() ?: ""}" }
-                    .onTechnicalFailure { tvStatus.text = "超时调用技术失败: ${it.message}" }
-                    .onBusinessFailure { code, msg -> tvStatus.text = "超时调用业务失败: $code, $msg" }
+                    .onSuccess { setStatus(R.string.timeout_success_fmt, it?.toString() ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.timeout_tech_fail_fmt, it.message ?: "") }
+                    .onBusinessFailure { code, msg -> setStatus(R.string.timeout_business_fail_fmt, code, msg) }
             }
         }
     }
 
     private fun doPayExample() {
-        tvStatus.text = "Pay 接口请求中..."
+        setStatusText(R.string.pay_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest<String> { payApi.getPayStatus() }
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { tvStatus.text = "Pay 成功: ${it ?: ""}" }
-                    .onTechnicalFailure { tvStatus.text = "Pay 技术失败: ${it.message}" }
-                    .onBusinessFailure { code, msg -> tvStatus.text = "Pay 业务失败: $code, $msg" }
+                    .onSuccess { setStatus(R.string.pay_success_fmt, it ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.pay_tech_fail_fmt, it.message ?: "") }
+                    .onBusinessFailure { code, msg -> setStatus(R.string.pay_business_fail_fmt, code, msg) }
             }
         }
     }
 
     private fun doRawRequest() {
-        tvStatus.text = "Raw 请求中..."
+        setStatusText(R.string.raw_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRawRequest<ResponseBody> {
-                userService.downloadFile("https://i2.hdslb.com/bfs/archive/88e096dbe81976fdeca5ec86962a232a71500520.jpg")
+                userService.downloadFile(DEMO_IMAGE_URL)
             }
             launch(Dispatchers.Main) {
                 when (result) {
                     is NetworkResult.Success -> {
                         val size = result.data?.contentLength() ?: -1
-                        tvStatus.text = "Raw 成功: size=$size"
+                        setStatus(R.string.raw_success_size, size)
                         result.data?.close()
                     }
-                    is NetworkResult.TechnicalFailure -> tvStatus.text = "Raw 技术失败: ${result.exception.message}"
-                    is NetworkResult.BusinessFailure -> tvStatus.text = "Raw 业务失败: ${result.code}, ${result.msg}"
+                    is NetworkResult.TechnicalFailure -> setStatus(R.string.raw_tech_fmt, result.exception.message ?: "")
+                    is NetworkResult.BusinessFailure -> setStatus(R.string.raw_business_msg_fmt, result.code, result.msg)
                 }
             }
         }
     }
 
     private fun doDownload() {
-        tvStatus.text = "状态"
+        setStatusText(R.string.status_default)
         val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: filesDir
         val targetFile = File(dir, "demo_net.jpg")
         val progressFlow = MutableSharedFlow<ProgressInfo>(replay = 1, extraBufferCapacity = 64)
 
         val job = launch {
             progressFlow.collect { info ->
-                tvStatus.text = "下载进度: ${info.progress}%"
+                setStatus(R.string.download_progress, info.progress)
             }
         }
 
@@ -306,7 +329,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 progressFlow = progressFlow,
                 cancelJob = currentCancelJob
             ) {
-                userService.downloadFile("https://i2.hdslb.com/bfs/archive/88e096dbe81976fdeca5ec86962a232a71500520.jpg")
+                userService.downloadFile(DEMO_IMAGE_URL)
             }
 
             launch(Dispatchers.Main) {
@@ -314,14 +337,18 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 currentCancelJob = null
                 result
                     .onSuccess { file ->
-                        tvStatus.text = "下载成功: ${file?.absolutePath ?: ""}"
+                        setStatus(R.string.download_success, file?.absolutePath ?: "")
                         file?.let { ivPreview.setImageURI(Uri.fromFile(it)) }
                     }
                     .onTechnicalFailure { e ->
-                        tvStatus.text = "下载失败: ${e.message}"
+                        if (e.code == -999) {
+                            setStatusText(R.string.download_cancelled)
+                        } else {
+                            setStatus(R.string.download_fail, e.message ?: "")
+                        }
                     }
                     .onBusinessFailure { code, msg ->
-                        tvStatus.text = "下载业务失败: $code, $msg"
+                        setStatus(R.string.download_business_fail, code, msg)
                     }
             }
         }
@@ -329,11 +356,11 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun cancelDownload() {
         currentCancelJob?.cancel()
-        tvStatus.text = "取消下载请求已发"
+        setStatusText(R.string.cancel_download_sent)
     }
 
     private fun doHashDownload() {
-        tvStatus.text = "哈希校验下载中..."
+        setStatusText(R.string.hash_download_in_progress)
         val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: filesDir
         val targetFile = File(dir, "demo_hash.jpg")
         val progressFlow = MutableSharedFlow<ProgressInfo>(replay = 1, extraBufferCapacity = 64)
@@ -345,19 +372,19 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 expectedHash = "deadbeef",
                 hashStrategy = HashVerificationStrategy.KEEP_ON_MISMATCH
             ) {
-                userService.downloadFile("https://i2.hdslb.com/bfs/archive/88e096dbe81976fdeca5ec86962a232a71500520.jpg")
+                userService.downloadFile(DEMO_IMAGE_URL)
             }
 
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { file -> tvStatus.text = "哈希下载成功: ${file?.absolutePath ?: ""}" }
-                    .onTechnicalFailure { e -> tvStatus.text = "哈希下载失败: ${e.message ?: ""}" }
+                    .onSuccess { file -> setStatus(R.string.hash_download_success, file?.absolutePath ?: "") }
+                    .onTechnicalFailure { e -> setStatus(R.string.hash_download_fail_fmt, e.message ?: "") }
             }
         }
     }
 
     private fun doRetryDemo() {
-        tvStatus.text = "重试示例中..."
+        setStatusText(R.string.retry_in_progress)
         launch(Dispatchers.IO) {
             try {
                 val response = retryWithBackoff(
@@ -368,18 +395,18 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
                 launch(Dispatchers.Main) {
                     response
-                        .onSuccess { tvStatus.text = "Retry 成功: ${it?.toString() ?: ""}" }
-                        .onTechnicalFailure { tvStatus.text = "Retry 技术失败: ${it.message}" }
-                        .onBusinessFailure { code, msg -> tvStatus.text = "Retry 业务失败: $code, $msg" }
+                        .onSuccess { setStatus(R.string.retry_success_fmt, it?.toString() ?: "") }
+                        .onTechnicalFailure { setStatus(R.string.retry_tech_fail_fmt, it.message ?: "") }
+                        .onBusinessFailure { code, msg -> setStatus(R.string.retry_business_fail_fmt, code, msg) }
                 }
             } catch (t: Throwable) {
-                launch(Dispatchers.Main) { tvStatus.text = "Retry 抛出异常: ${t.message}" }
+                launch(Dispatchers.Main) { setStatus(R.string.retry_thrown_fmt, t.message ?: "") }
             }
         }
     }
 
     private fun doPollingDemo() {
-        tvStatus.text = "轮询示例中..."
+        setStatusText(R.string.poll_in_progress)
         val flow = pollingFlow(
             periodMillis = 2000,
             maxAttempts = 5,
@@ -393,24 +420,23 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             flow.collect { item ->
                 launch(Dispatchers.Main) {
                     when (item) {
-                        is NetworkResult.Success<*> -> tvStatus.text = "轮询成功: ${item.data?.toString() ?: ""}"
-                        is NetworkResult.TechnicalFailure -> tvStatus.text = "轮询技术失败: ${item.exception.message}"
-                        is NetworkResult.BusinessFailure -> tvStatus.text = "轮询业务失败: ${item.code}, ${item.msg}"
+                        is NetworkResult.Success<*> -> setStatus(R.string.poll_success, item.data?.toString() ?: "")
+                        is NetworkResult.TechnicalFailure -> setStatus(R.string.poll_tech_fmt, item.exception.message ?: "")
+                        is NetworkResult.BusinessFailure -> setStatus(R.string.poll_business_with_msg_fmt, item.code, item.msg)
                     }
                 }
             }
         }
     }
 
-    // 新增方法：Token 刷新示例（使用注入的 TokenProvider，如果没有则提示）
     private fun doTokenRefreshDemo() {
         if (!tokenProviderOptional.isPresent) {
-            tvStatus.text = "未配置 TokenProvider，无法演示刷新"
+            setStatusText(R.string.token_demo_not_configured)
             return
         }
 
         val provider = tokenProviderOptional.get()
-        tvStatus.text = "当前 token=${provider.getAccessToken() ?: "(null)"}，开始演示..."
+        setStatus(R.string.token_demo_current, provider.getAccessToken() ?: "(null)")
 
         // 如果是 AppTokenProvider，可以给 demo 一个初始 token（仅演示用途）
         if (provider is AppTokenProvider) {
@@ -433,17 +459,17 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             launch(Dispatchers.Main) {
                 when (result) {
-                    is NetworkResult.Success -> tvStatus.text = "请求成功，data=${result.data}，当前 token=${provider.getAccessToken()}"
-                    is NetworkResult.BusinessFailure -> tvStatus.text = "业务失败: ${result.code}, ${result.msg}，当前 token=${provider.getAccessToken()}"
-                    is NetworkResult.TechnicalFailure -> tvStatus.text = "技术失败: ${result.exception.message}，当前 token=${provider.getAccessToken()}"
-                    else -> tvStatus.text = "调用异常或被中断，当前 token=${provider.getAccessToken()}"
+                    is NetworkResult.Success -> setStatus(R.string.token_demo_success, result.data ?: "", provider.getAccessToken() ?: "")
+                    is NetworkResult.BusinessFailure -> setStatus(R.string.token_demo_business_fail, result.code, result.msg, provider.getAccessToken() ?: "")
+                    is NetworkResult.TechnicalFailure -> setStatus(R.string.token_demo_tech_fail, result.exception.message ?: "", provider.getAccessToken() ?: "")
+                    else -> setStatus(R.string.token_demo_error, provider.getAccessToken() ?: "")
                 }
             }
         }
     }
 
     private fun doStatusModelDemo() {
-        tvStatus.text = "status 返回模型示例中..."
+        setStatusText(R.string.status_model_in_progress)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest {
                 // 这里用本地模拟的 StatusResponse，真实项目中由 Retrofit 返回
@@ -451,17 +477,51 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     status = true,
                     rawCode = 0,
                     msg = "ok",
-                    data = User(id = "1", name = "demo", age = 18),
+                    localData = User(id = "1", name = "demo", age = 18),
                     successCode = 0
                 )
             }
             launch(Dispatchers.Main) {
                 result
-                    .onSuccess { tvStatus.text = "status 模型成功: ${it?.toString() ?: ""}" }
-                    .onTechnicalFailure { tvStatus.text = "status 模型技术失败: ${it.message}" }
-                    .onBusinessFailure { code, msg -> tvStatus.text = "status 模型业务失败: $code, $msg" }
+                    .onSuccess { setStatus(R.string.status_model_success_fmt, it?.toString() ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.status_model_tech_fail_fmt, it.message ?: "") }
+                    .onBusinessFailure { code, msg -> setStatus(R.string.status_model_business_fail_fmt, code, msg) }
             }
         }
+    }
+
+    private fun setupResponseMappingSwitch() {
+        val current = networkConfigProvider.current.responseFieldMapping
+        val isStatusMessageMode = current.codeKey == "status" && current.msgKey == "message"
+        switchResponseMapping.setOnCheckedChangeListener(null)
+        switchResponseMapping.isChecked = isStatusMessageMode
+        switchResponseMapping.text = getString(
+            if (isStatusMessageMode) R.string.response_mapping_switch_on else R.string.response_mapping_switch_off
+        )
+        switchResponseMapping.setOnCheckedChangeListener { _, isChecked ->
+            applyResponseMappingPreset(isChecked)
+        }
+    }
+
+    private fun applyResponseMappingPreset(useStatusMessagePreset: Boolean) {
+        val targetMapping = if (useStatusMessagePreset) {
+            ResponseMappingPresets.statusMessageData()
+        } else {
+            ResponseMappingPresets.standardCodeMsgData()
+        }
+        networkConfigProvider.update { old ->
+            old.copy(responseFieldMapping = targetMapping)
+        }
+        switchResponseMapping.text = getString(
+            if (useStatusMessagePreset) R.string.response_mapping_switch_on else R.string.response_mapping_switch_off
+        )
+        setStatusText(
+            if (useStatusMessagePreset) {
+                R.string.response_mapping_applied_status_message
+            } else {
+                R.string.response_mapping_applied_standard
+            }
+        )
     }
 
     override fun onDestroy() {

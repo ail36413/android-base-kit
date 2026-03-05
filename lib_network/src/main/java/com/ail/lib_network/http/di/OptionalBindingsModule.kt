@@ -14,6 +14,9 @@ import okhttp3.Interceptor
 @InstallIn(SingletonComponent::class)
 abstract class OptionalBindingsModule {
 
+    // Optional extension points: app can provide any subset as needed.
+    // Minimal required initialization remains only NetworkConfig.
+
     @BindsOptionalOf
     abstract fun optionalTokenProvider(): TokenProvider
 

@@ -1,4 +1,4 @@
-package com.bohai.util
+package com.ail.android_base_kit.network.http.util
 
 import com.ail.lib_network.http.model.NetworkResult
 import com.ail.lib_network.http.exception.RequestException

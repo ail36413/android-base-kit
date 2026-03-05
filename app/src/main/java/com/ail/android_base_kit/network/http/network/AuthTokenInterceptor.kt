@@ -1,4 +1,4 @@
-package com.bohai.network
+package com.ail.android_base_kit.network.http.network
 
 import android.util.Base64
 import okhttp3.Interceptor

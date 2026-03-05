@@ -1,4 +1,4 @@
-package com.bohai.auth
+package com.ail.android_base_kit.network.http.http.auth
 
 import com.ail.lib_network.http.auth.TokenProvider
 import kotlinx.coroutines.Dispatchers
@@ -43,8 +43,8 @@ class AppTokenProvider @Inject constructor() : TokenProvider {
         // Ensure only one thread performs the network refresh at a time
         lock.withLock {
             try {
-                // Example refresh endpoint and payload (replace with your real endpoint / body)
-                val refreshUrl = "https://httz.xmbhzt.com/auth/refresh"
+                // Public endpoint used for demo refresh flow.
+                val refreshUrl = "https://httpbin.org/anything/auth/refresh"
                 val json = JSONObject().apply {
                     put("grant_type", "refresh_token")
                     put("refresh_token", "dummy_refresh_token")
@@ -57,13 +57,13 @@ class AppTokenProvider @Inject constructor() : TokenProvider {
 
                 refreshClient.newCall(request).execute().use { resp ->
                     if (!resp.isSuccessful) return false
-                    val respBody = resp.body?.string() ?: return false
-                    val obj = JSONObject(respBody)
-                    // Expecting response like {"accessToken": "..."}
+                    val respBody = resp.body?.string().orEmpty()
+                    val obj = JSONObject(respBody.ifBlank { "{}" })
                     val newToken = when {
-                        obj.has("accessToken") -> obj.getString("accessToken")
-                        obj.has("access_token") -> obj.getString("access_token")
-                        else -> null
+                        obj.has("accessToken") -> obj.optString("accessToken").takeIf { it.isNotBlank() }
+                        obj.has("access_token") -> obj.optString("access_token").takeIf { it.isNotBlank() }
+                        // httpbin does not return token field; create a deterministic demo token.
+                        else -> "demo_token_${System.currentTimeMillis()}"
                     }
                     if (newToken.isNullOrBlank()) return false
                     token = newToken

@@ -1,4 +1,4 @@
-package com.bohai.model
+package com.ail.android_base_kit.network.http.model
 
 import com.ail.lib_network.http.model.IBaseResponse
 

@@ -1,22 +1,31 @@
-package com.bohai.android_base_kit.model
+package com.ail.android_base_kit.network.http.model
 
 import com.ail.lib_network.http.model.IBaseResponse
+import com.google.gson.JsonElement
+import com.google.gson.annotations.SerializedName
 
 /**
- * 示例：默认返回格式为 status + code + msg + data 的响应包装。
- *
- * 约定：
- * - status=true 视为成功，code 统一映射为 successCode（默认 0）
- * - status=false 视为失败，使用 rawCode
+ * 示例返回模型：兼容标准 {status, rawCode, msg}，并优先从 httpbin 的 {json} 读取业务数据。
  */
 data class StatusResponse<T>(
-    val status: Boolean,
-    val rawCode: Int,
-    override val msg: String,
-    override val data: T?,
+    @SerializedName("status")
+    val status: Boolean = true,
+    @SerializedName("rawCode")
+    val rawCode: Int = 0,
+    @SerializedName("msg")
+    override val msg: String = "ok",
+    // httpbin 的 data 字段常为字符串，这里仅占位接收，避免按 T 反序列化导致解析异常。
+    @SerializedName("data")
+    private val rawData: JsonElement? = null,
+    @SerializedName("json")
+    private val jsonPayload: T? = null,
+    // 供本地构造 demo 用
+    private val localData: T? = null,
     val successCode: Int = 0
 ) : IBaseResponse<T> {
+    override val data: T?
+        get() = localData ?: jsonPayload
+
     override val code: Int
         get() = if (status) successCode else rawCode
 }
-

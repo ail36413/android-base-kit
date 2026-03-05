@@ -1,4 +1,4 @@
-package com.bohai.android_base_kit.http
+package com.ail.android_base_kit.network.http.http
 
 /**
  * Deprecated: Global401Interceptor is no longer needed because the library's RequestExecutor

@@ -1,22 +1,26 @@
-package com.bohai.android_base_kit.di
+package com.ail.android_base_kit.network.di
 
 import android.util.Log
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-import com.bohai.UserService
-import com.bohai.apis.DemoApi
-import com.bohai.apis.PayApi
-import com.bohai.apis.UploadApi
-import com.bohai.network.AuthTokenInterceptor
-import com.bohai.network.DeviceIdInterceptor
+import com.ail.android_base_kit.network.http.UserService
+import com.ail.android_base_kit.network.http.http.apis.DemoApi
+import com.ail.android_base_kit.network.http.http.apis.PayApi
+import com.ail.android_base_kit.network.http.http.apis.UploadApi
+import com.ail.android_base_kit.network.http.network.AuthTokenInterceptor
+import com.ail.android_base_kit.network.http.network.DeviceIdInterceptor
 import com.ail.lib_network.http.annotations.AppInterceptor
 import com.ail.lib_network.http.annotations.INetLogger
 import com.ail.lib_network.http.annotations.NetworkConfig
+import com.ail.android_base_kit.network.http.model.ResponseMappingPresets
+import com.ail.lib_network.websocket.IWebSocketLogger
 import com.ail.lib_network.http.auth.TokenProvider
 import com.ail.lib_network.http.auth.UnauthorizedHandler
 import com.ail.lib_network.http.util.NetworkClientFactory
 import com.ail.lib_network.websocket.annotation.WebSocketClient
+import com.ail.android_base_kit.network.http.auth.AppUnauthorizedHandler
+import com.ail.android_base_kit.network.http.http.auth.AppTokenProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,19 +34,30 @@ import java.util.Optional
 @InstallIn(SingletonComponent::class)
 object AppNetworkModule {
 
+    private const val HTTP_BIN_BASE_URL = "https://httpbin.org/"
+
+    /**
+     * 必配：lib_network 的最小必需初始化，必须提供 NetworkConfig。
+     * 说明：baseUrl 仅用于 Demo 接口，必须是 http/https 且以 / 结尾。
+     */
     @Provides
     @Singleton
     fun provideNetworkConfig(): NetworkConfig {
         return NetworkConfig(
-            baseUrl = "https://httz.xmbhzt.com/",
+            baseUrl = HTTP_BIN_BASE_URL,
             isLogEnabled = true,
             extraHeaders = mapOf(
                 "X-App-Version" to "1111",
                 "X-Version-Code" to "1.0.0"
-            )
+            ),
+            // 默认预设：code/msg/data
+            responseFieldMapping = ResponseMappingPresets.standardCodeMsgData()
         )
     }
 
+    /**
+     * 选配：自定义 HTTP 日志输出；不提供时库内会使用 no-op logger。
+     */
     @Provides
     @Singleton
     fun provideNetLogger(): INetLogger = object : INetLogger {
@@ -54,24 +69,22 @@ object AppNetworkModule {
         }
     }
 
-
-
-    // 示例性的 TokenProvider：用于 demo中让 Library 的 NetworkModule 自动注册 TokenAuthenticator。
-    // 已替换为 AppTokenProvider 类（在 com.bohai.auth）更贴近生产实现。
+    /**
+     * 选配：TokenProvider，提供后库会自动启用 TokenAuthenticator 刷新逻辑。
+     */
     @Provides
     @Singleton
-    fun provideTokenProvider(provider: com.bohai.auth.AppTokenProvider): com.ail.lib_network.http.auth.TokenProvider = provider
-
-    @Provides
-    @Singleton
-    fun provideUnauthorizedHandler(handler: com.bohai.android_base_kit.auth.AppUnauthorizedHandler): UnauthorizedHandler = handler
+    fun provideTokenProvider(provider: AppTokenProvider): TokenProvider = provider
 
     /**
-     * 项目层自定义拦截器，Key 为执行顺序（数值越小越先执行）
-     * 示例：
-     * - 100: 添加 Token（AuthTokenInterceptor）
-     * - 200: 添加设备 ID（DeviceIdInterceptor）
-     * 若无自定义拦截器，可返回 emptyMap()
+     * 选配：401 未授权处理回调（如清理状态并跳转登录页）。
+     */
+    @Provides
+    @Singleton
+    fun provideUnauthorizedHandler(handler: AppUnauthorizedHandler): UnauthorizedHandler = handler
+
+    /**
+     * 选配：项目层自定义拦截器，Key 为执行顺序（数值越小越先执行）。
      */
     @Provides
     @AppInterceptor
@@ -98,8 +111,8 @@ object AppNetworkModule {
     @Singleton
     @PayRetrofit
     fun providePayRetrofit(factory: NetworkClientFactory): Retrofit {
-        // Demo pay baseUrl; replace with real baseUrl when available
-        return factory.createRetrofit("https://pay.example.com/")
+        // Public test base URL for pay demo
+        return factory.createRetrofit(HTTP_BIN_BASE_URL)
     }
 
     @Provides
@@ -121,10 +134,8 @@ object AppNetworkModule {
     @Singleton
     fun providePayApi(@PayRetrofit retrofit: Retrofit): PayApi = retrofit.create(PayApi::class.java)
 
-
-
     /**
-     * 提供 WebSocket OkHttpClient(可选)
+     * 选配：提供 WebSocket OkHttpClient；不提供时库内会使用默认配置。
      */
     @Provides
     @Singleton
@@ -138,13 +149,12 @@ object AppNetworkModule {
             .build()
     }
 
+    /**
+     * 选配：提供 WebSocket 日志实现；与 HTTP 日志完全独立。
+     */
     @Provides
     @Singleton
-    fun provideWebSocketLogEnabled(): Boolean = true // WebSocket 日志已开启
-
-    @Provides
-    @Singleton
-    fun provideWebSocketLoggerImpl(): INetLogger = object : INetLogger {
+    fun provideWebSocketLogger(): IWebSocketLogger = object : IWebSocketLogger {
         override fun d(tag: String, msg: String) {
             Log.d(tag, "[WebSocket] $msg")
         }

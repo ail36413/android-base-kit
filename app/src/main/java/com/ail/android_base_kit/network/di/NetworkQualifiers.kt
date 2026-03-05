@@ -1,4 +1,4 @@
-package com.bohai.android_base_kit.di
+package com.ail.android_base_kit.network.di
 
 import javax.inject.Qualifier
 
@@ -9,4 +9,3 @@ annotation class NormalRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class PayRetrofit
-

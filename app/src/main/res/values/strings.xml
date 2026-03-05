@@ -73,5 +73,121 @@
     <string name="token_demo_tech_fail">技术失败: %1$s，当前 token=%2$s</string>
     <string name="token_demo_error">调用异常或被中断，当前 token=%1$s</string>
 
+    <!-- Image demo dynamic texts -->
+    <string name="image_loading">加载中...</string>
+    <string name="image_loaded">加载成功</string>
+    <string name="image_failed">加载失败</string>
+    <string name="image_cache_cleared">已清除全部缓存</string>
+    <string name="image_error_loading">错误场景：加载中...</string>
+    <string name="image_error_unexpected_success">错误场景：意外成功</string>
+    <string name="image_error_failed_callback">错误场景：失败回调已触发</string>
+    <string name="image_preloading">预加载中...</string>
+    <string name="image_preloaded">预加载完成（图片已缓存）</string>
+    <string name="image_downloading">下载中...</string>
+    <string name="image_download_success">下载成功: %1$s</string>
+    <string name="image_download_failed">下载失败: %1$s</string>
+    <string name="image_bitmap_loading">加载Bitmap中...</string>
+    <string name="image_bitmap_success">加载Bitmap成功: %1$dx%2$d</string>
+    <string name="image_bitmap_failed">加载Bitmap失败: %1$s</string>
+    <string name="image_pause_done">已暂停所有加载请求</string>
+    <string name="image_resume_done">已恢复所有加载请求</string>
+
+    <!-- Network demo UI strings -->
+    <string name="net_demo_title">HTTP 网络库演示</string>
+    <string name="net_demo_subtitle">覆盖请求、上传下载、重试轮询、Token 刷新等常见能力</string>
+    <string name="net_demo_endpoint_hint">测试地址: https://httpbin.org / https://picsum.photos</string>
+    <string name="net_section_request">请求能力</string>
+    <string name="net_section_transfer">上传下载</string>
+    <string name="net_section_advanced">高级能力</string>
+    <string name="btn_status_model">status 返回模型示例</string>
+    <string name="response_mapping_switch_on">响应映射: status/message/data</string>
+    <string name="response_mapping_switch_off">响应映射: code/msg/data</string>
+    <string name="response_mapping_hint">切换后对新发起请求生效，用于演示全局返回字段映射</string>
+    <string name="response_mapping_applied_standard">已切换为 code/msg/data 全局映射</string>
+    <string name="response_mapping_applied_status_message">已切换为 status/message/data 全局映射</string>
+
+    <!-- Main page UI strings -->
+    <string name="main_title">Android Base Kit</string>
+    <string name="main_subtitle">基础能力库集成演示</string>
+    <string name="main_footer">android-base-kit · demo</string>
+    <string name="main_card_image_title">图片加载库</string>
+    <string name="main_card_image_desc">圆形/圆角/模糊/灰度/滤镜/缓存/回调</string>
+    <string name="main_card_http_title">HTTP 网络库</string>
+    <string name="main_card_http_desc">请求/上传/下载/Token刷新/拦截器/重试</string>
+    <string name="main_card_ws_title">WebSocket 库</string>
+    <string name="main_card_ws_desc">心跳/重连/离线补发/多连接管理</string>
+
+    <!-- NetActivity full status texts -->
+    <string name="status_default">状态</string>
+    <string name="post_success_fmt">POST 成功: %1$s</string>
+    <string name="post_business_fail_fmt">POST 业务失败: %1$d, %2$s</string>
+    <string name="custom_header_success_fmt">自定义 Header 请求成功: %1$s</string>
+    <string name="custom_header_tech_fail_fmt">自定义 Header 技术失败: %1$s</string>
+    <string name="custom_header_business_fail_fmt">自定义 Header 业务失败: %1$d, %2$s</string>
+    <string name="timeout_success_fmt">超时调用返回: %1$s</string>
+    <string name="timeout_tech_fail_fmt">超时调用技术失败: %1$s</string>
+    <string name="timeout_business_fail_fmt">超时调用业务失败: %1$d, %2$s</string>
+    <string name="pay_success_fmt">Pay 成功: %1$s</string>
+    <string name="pay_tech_fail_fmt">Pay 技术失败: %1$s</string>
+    <string name="pay_business_fail_fmt">Pay 业务失败: %1$d, %2$s</string>
+    <string name="raw_success_size">Raw 成功: size=%1$d</string>
+    <string name="raw_business_msg_fmt">Raw 业务失败: %1$d, %2$s</string>
+    <string name="download_cancelled">下载已取消</string>
+    <string name="status_model_in_progress">status 返回模型示例中...</string>
+    <string name="status_model_success_fmt">status 模型成功: %1$s</string>
+    <string name="status_model_tech_fail_fmt">status 模型技术失败: %1$s</string>
+    <string name="status_model_business_fail_fmt">status 模型业务失败: %1$d, %2$s</string>
+    <string name="retry_tech_fail_fmt">Retry 技术失败: %1$s</string>
+    <string name="retry_business_fail_fmt">Retry 业务失败: %1$d, %2$s</string>
+    <string name="poll_business_with_msg_fmt">轮询业务失败: %1$d, %2$s</string>
+
+    <!-- WebSocket demo UI strings -->
+    <string name="ws_title">WebSocket 示例</string>
+    <string name="ws_desc">演示：连接/断开、文本/二进制发送、心跳、重连、离线补发</string>
+    <string name="ws_endpoint_hint">测试地址: wss://ws.postman-echo.com/raw</string>
+    <string name="ws_input_hint">输入要发送的文本</string>
+    <string name="ws_section_multi">多连接管理</string>
+    <string name="ws_section_default">单连接快捷API（无需指定connectionId）</string>
+    <string name="ws_log_title">日志输出：</string>
+    <string name="ws_btn_connect">连接</string>
+    <string name="ws_btn_reconnect">手动重连</string>
+    <string name="ws_btn_disconnect">断开</string>
+    <string name="ws_btn_send_text">发送文本</string>
+    <string name="ws_btn_send_binary">发送二进制</string>
+    <string name="ws_btn_connect_default">连接默认</string>
+    <string name="ws_btn_send_default">默认连接发送</string>
+    <string name="ws_toast_input_required">请输入要发送的文本</string>
+    <string name="pay_in_progress">Pay 接口请求中...</string>
+    <string name="retry_success_fmt">Retry 成功: %1$s</string>
+    <string name="ws_intro">演示功能：状态回调、心跳、重连、离线补发、回调主线程、单连接快捷API</string>
+
+    <!-- WebSocket log templates -->
+    <string name="ws_log_manual_reconnect_triggered">触发手动重连</string>
+    <string name="ws_log_manual_reconnect_failed">手动重连失败（当前非断开状态）</string>
+    <string name="ws_log_disconnected_permanent">主动断开连接（永久）</string>
+    <string name="ws_log_send_text_ok">发送文本：%1$s</string>
+    <string name="ws_log_send_text_fail">发送失败：%1$s</string>
+    <string name="ws_log_send_binary_ok">发送二进制：%1$d bytes</string>
+    <string name="ws_log_send_binary_fail">发送失败：二进制（%1$d bytes）</string>
+    <string name="ws_log_connected">连接成功：%1$s</string>
+    <string name="ws_log_state_changed">状态变化：%1$s -> %2$s</string>
+    <string name="ws_log_receive_text">收到文本：%1$s</string>
+    <string name="ws_log_receive_binary">收到二进制：%1$d bytes</string>
+    <string name="ws_log_closing">连接关闭中：%1$d %2$s</string>
+    <string name="ws_log_closed">连接已关闭：%1$d %2$s</string>
+    <string name="ws_log_failure">连接失败：%1$s</string>
+    <string name="ws_log_reconnecting">触发重连：第%1$d 次</string>
+    <string name="ws_log_heartbeat_timeout">心跳超时：触发断开</string>
+    <string name="ws_log_connect_start">开始连接：%1$s</string>
+    <string name="ws_log_default_send_ok">[默认连接] 发送：%1$s</string>
+    <string name="ws_log_default_send_fail">[默认连接] 发送失败：%1$s</string>
+    <string name="ws_log_default_connected">[默认连接] 连接成功</string>
+    <string name="ws_log_default_state_changed">[默认连接] 状态变化：%1$s -> %2$s</string>
+    <string name="ws_log_default_receive_text">[默认连接] 收到文本：%1$s</string>
+    <string name="ws_log_default_receive_binary">[默认连接] 收到二进制：%1$d bytes</string>
+    <string name="ws_log_default_closed">[默认连接] 连接已关闭：%1$d %2$s</string>
+    <string name="ws_log_default_failure">[默认连接] 连接失败：%1$s</string>
+    <string name="ws_log_default_reconnecting">[默认连接] 触发重连：第%1$d 次</string>
+    <string name="ws_log_default_connect_start">[默认连接] 开始连接：%1$s</string>
 
 </resources>

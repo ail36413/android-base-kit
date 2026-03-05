@@ -9,6 +9,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+
         <!-- 基础功能 -->
         <TextView
             android:layout_width="wrap_content"
@@ -50,6 +51,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:scaleType="centerCrop" />
+
 
         <!-- 变换效果 -->
         <TextView
@@ -159,6 +161,50 @@
             android:layout_height="120dp"
             android:scaleType="centerCrop" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="高质量图片（ARGB_8888）" />
+
+        <ImageView
+            android:id="@+id/imageHighQuality"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="指定尺寸加载（200x200）" />
+
+        <ImageView
+            android:id="@+id/imageOverrideSize"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="跳过缓存加载" />
+
+        <ImageView
+            android:id="@+id/imageSkipCache"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="列表防错位（cancelOnDetach）" />
+
+        <ImageView
+            android:id="@+id/imageCancelOnDetach"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
+
         <!-- 工具方法演示 -->
         <TextView
             android:layout_width="wrap_content"
@@ -197,5 +243,127 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="清除全部缓存" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="预加载图片到缓存" />
+
+        <Button
+            android:id="@+id/btnPreload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="预加载图片" />
+
+        <TextView
+            android:id="@+id/textPreload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#4CAF50" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="下载图片到本地" />
+
+        <Button
+            android:id="@+id/btnDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载图片" />
+
+        <TextView
+            android:id="@+id/textDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#2196F3" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="加载图片为 Bitmap" />
+
+        <Button
+            android:id="@+id/btnLoadBitmap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载Bitmap" />
+
+        <TextView
+            android:id="@+id/textBitmap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#9C27B0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="暂停/恢复加载请求" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="暂停加载" />
+
+            <Button
+                android:id="@+id/btnResume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="恢复加载" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textPauseResume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FF5722" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="失败回调演示（错误URL）" />
+
+        <ImageView
+            android:id="@+id/imageErrorCase"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/textErrorCase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#F44336" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="RecyclerView复用演示（cancelOnDetach）" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerReuse"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:clipToPadding="false"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" />
     </LinearLayout>
 </ScrollView>

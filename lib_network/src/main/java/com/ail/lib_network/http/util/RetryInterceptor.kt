@@ -15,7 +15,6 @@ class RetryInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         var attempt = 0
-        var lastException: IOException? = null
 
         while (true) {
             try {
@@ -25,8 +24,9 @@ class RetryInterceptor(
                 }
                 response.close()
             } catch (ioe: IOException) {
-                lastException = ioe
-                if (!strategy.shouldRetry(request, null, ioe, attempt)) break
+                if (!strategy.shouldRetry(request, null, ioe, attempt)) {
+                    throw ioe
+                }
             }
 
             val backoff = strategy.nextDelayMillis(attempt)
@@ -34,12 +34,9 @@ class RetryInterceptor(
                 Thread.sleep(backoff)
             } catch (_: InterruptedException) {
                 Thread.currentThread().interrupt()
-                break
+                throw IOException("retry interrupted")
             }
             attempt++
         }
-
-        lastException?.let { throw it }
-        return chain.proceed(request)
     }
 }

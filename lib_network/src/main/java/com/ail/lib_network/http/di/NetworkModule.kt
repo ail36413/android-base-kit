@@ -9,9 +9,13 @@ import com.ail.lib_network.http.interceptor.DynamicBaseUrlInterceptor
 import com.ail.lib_network.http.interceptor.DynamicTimeoutInterceptor
 import com.ail.lib_network.http.interceptor.ExtraHeadersInterceptor
 import com.ail.lib_network.http.interceptor.PrettyNetLogger
+import com.ail.lib_network.http.model.GlobalResponseTypeAdapterFactory
 import com.ail.lib_network.http.util.DefaultRetryStrategy
 import com.ail.lib_network.http.util.NetworkClientFactory
 import com.ail.lib_network.http.util.RetryInterceptor
+import com.ail.lib_network.http.util.orDefault
+import com.ail.lib_network.http.util.getOrNull
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +42,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Suppress("NewApi")
     fun provideOkHttpClient(
         configProvider: NetworkConfigProvider,
         netLoggerOptional: Optional<INetLogger>,
@@ -46,8 +51,8 @@ object NetworkModule {
         tokenProvider: Optional<TokenProvider>
     ): OkHttpClient {
         val config = configProvider.current
-        val netLogger = netLoggerOptional.orElse(NOOP_INET_LOGGER)
-        val customInterceptors = optionalCustomInterceptors.orElse(emptyMap())
+        val netLogger = netLoggerOptional.orDefault(NOOP_INET_LOGGER)
+        val customInterceptors = optionalCustomInterceptors.orDefault(emptyMap())
 
         val builder = OkHttpClient.Builder()
             .connectTimeout(config.connectTimeout, TimeUnit.SECONDS)
@@ -84,9 +89,10 @@ object NetworkModule {
         }
 
         // If app provided a TokenProvider, register TokenAuthenticator (optional behavior)
-        if (tokenProvider.isPresent) {
+        val providedTokenProvider = tokenProvider.getOrNull()
+        if (providedTokenProvider != null) {
             try {
-                builder.authenticator(TokenAuthenticator(tokenProvider.get()))
+                builder.authenticator(TokenAuthenticator(providedTokenProvider))
             } catch (_: Throwable) {
                 // ignore auth setup failure
             }
@@ -128,14 +134,23 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideNetworkClientFactory(
-        client: OkHttpClient
+        client: OkHttpClient,
+        configProvider: NetworkConfigProvider
     ): NetworkClientFactory {
+        val gson = GsonBuilder()
+            .registerTypeAdapterFactory(
+                GlobalResponseTypeAdapterFactory {
+                    configProvider.current.responseFieldMapping
+                }
+            )
+            .create()
+
         return object : NetworkClientFactory {
             override fun createRetrofit(baseUrl: String): Retrofit {
                 return Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()
             }
         }

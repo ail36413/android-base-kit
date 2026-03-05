@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="surface">#F5F7FA</color>
+    <color name="card_bg">#FFFFFF</color>
+    <color name="icon_image">#43A047</color>
+    <color name="icon_network">#1E88E5</color>
+    <color name="icon_websocket">#8E24AA</color>
+    <color name="text_primary">#1A1A2E</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="divider">#E5E7EB</color>
 </resources>

@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import com.ail.lib_network.websocket.IWebSocketManager
 import com.ail.lib_network.websocket.WebSocketManager
@@ -23,7 +24,7 @@ class WebSocketDemoActivity : AppCompatActivity() {
     private lateinit var etMessage: EditText
 
     private val connectionId = "demo_ws"
-    private val wsUrl = "wss://echo.websocket.org" // 替换为你的地址
+    private val wsUrl = "wss://ws.postman-echo.com/raw" // 公共可用测试地址
 
     private val config = WebSocketManager.Config(
         enableHeartbeat = true,
@@ -48,28 +49,45 @@ class WebSocketDemoActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.btn_ws_reconnect).setOnClickListener {
             val started = wsManager.reconnect(connectionId)
-            appendLog(if (started) "触发手动重连" else "手动重连失败（当前非断开状态）")
+            appendLogRes(if (started) R.string.ws_log_manual_reconnect_triggered else R.string.ws_log_manual_reconnect_failed)
         }
         findViewById<Button>(R.id.btn_ws_disconnect).setOnClickListener {
             wsManager.disconnect(connectionId, permanent = true)
-            appendLog("主动断开连接（永久）")
+            appendLogRes(R.string.ws_log_disconnected_permanent)
         }
         findViewById<Button>(R.id.btn_ws_send_text).setOnClickListener {
             val content = etMessage.text?.toString()?.trim().orEmpty()
             if (content.isBlank()) {
-                toast("请输入要发送的文本")
+                toast(getString(R.string.ws_toast_input_required))
                 return@setOnClickListener
             }
             val queued = wsManager.sendMessage(connectionId, content)
-            appendLog(if (queued) "发送文本：$content" else "发送失败：$content")
+            appendLogRes(if (queued) R.string.ws_log_send_text_ok else R.string.ws_log_send_text_fail, content)
         }
         findViewById<Button>(R.id.btn_ws_send_binary).setOnClickListener {
             val bytes = "binary-demo".toByteArray()
             val queued = wsManager.sendMessage(connectionId, bytes)
-            appendLog(if (queued) "发送二进制：${bytes.size} bytes" else "发送失败：二进制")
+            appendLogRes(
+                if (queued) R.string.ws_log_send_binary_ok else R.string.ws_log_send_binary_fail,
+                bytes.size
+            )
+        }
+        
+        // 单连接快捷API演示
+        findViewById<Button>(R.id.btn_ws_connect_default).setOnClickListener {
+            connectDefault()
+        }
+        findViewById<Button>(R.id.btn_ws_send_default).setOnClickListener {
+            val content = etMessage.text?.toString()?.trim().orEmpty()
+            if (content.isBlank()) {
+                toast(getString(R.string.ws_toast_input_required))
+                return@setOnClickListener
+            }
+            val sent = wsManager.sendText(content)
+            appendLogRes(if (sent) R.string.ws_log_default_send_ok else R.string.ws_log_default_send_fail, content)
         }
 
-        appendLog("演示功能：状态回调、心跳、重连、离线补发、回调主线程")
+        appendLog(getString(R.string.ws_intro))
     }
 
     override fun onDestroy() {
@@ -84,7 +102,7 @@ class WebSocketDemoActivity : AppCompatActivity() {
             config = config,
             listener = object : WebSocketManager.WebSocketListener {
                 override fun onOpen(connectionId: String) {
-                    appendLog("连接成功：$connectionId")
+                    appendLogRes(R.string.ws_log_connected, connectionId)
                 }
 
                 override fun onStateChanged(
@@ -92,39 +110,39 @@ class WebSocketDemoActivity : AppCompatActivity() {
                     oldState: WebSocketManager.State,
                     newState: WebSocketManager.State
                 ) {
-                    appendLog("状态变化：$oldState -> $newState")
+                    appendLogRes(R.string.ws_log_state_changed, oldState.name, newState.name)
                 }
 
                 override fun onMessage(connectionId: String, text: String) {
-                    appendLog("收到文本：$text")
+                    appendLogRes(R.string.ws_log_receive_text, text)
                 }
 
                 override fun onMessage(connectionId: String, bytes: ByteArray) {
-                    appendLog("收到二进制：${bytes.size} bytes")
+                    appendLogRes(R.string.ws_log_receive_binary, bytes.size)
                 }
 
                 override fun onClosing(connectionId: String, code: Int, reason: String) {
-                    appendLog("连接关闭中：$code $reason")
+                    appendLogRes(R.string.ws_log_closing, code, reason)
                 }
 
                 override fun onClosed(connectionId: String, code: Int, reason: String) {
-                    appendLog("连接已关闭：$code $reason")
+                    appendLogRes(R.string.ws_log_closed, code, reason)
                 }
 
                 override fun onFailure(connectionId: String, throwable: Throwable) {
-                    appendLog("连接失败：${throwable.message}")
+                    appendLogRes(R.string.ws_log_failure, throwable.message ?: "")
                 }
 
                 override fun onReconnecting(connectionId: String, attempt: Int) {
-                    appendLog("触发重连：第$attempt 次")
+                    appendLogRes(R.string.ws_log_reconnecting, attempt)
                 }
 
                 override fun onHeartbeatTimeout(connectionId: String) {
-                    appendLog("心跳超时：触发断开")
+                    appendLogRes(R.string.ws_log_heartbeat_timeout)
                 }
             }
         )
-        appendLog("开始连接：$wsUrl")
+        appendLogRes(R.string.ws_log_connect_start, wsUrl)
     }
 
     private fun appendLog(message: String) {
@@ -135,5 +153,59 @@ class WebSocketDemoActivity : AppCompatActivity() {
 
     private fun toast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun appendLogRes(@StringRes resId: Int, vararg args: Any) {
+        appendLog(getString(resId, *args))
+    }
+
+    // ==================== 单连接快捷API演示 ====================
+    private val defaultUrl = "wss://ws.postman-echo.com/raw"
+
+    private fun connectDefault() {
+        wsManager.connectDefault(
+            url = defaultUrl,
+            config = WebSocketManager.Config(
+                enableHeartbeat = true,
+                heartbeatIntervalMs = 30_000,
+                enableMessageReplay = true,
+                callbackOnMainThread = true,
+                enableDebugLog = true
+            ),
+            listener = object : WebSocketManager.WebSocketListener {
+                override fun onOpen(connectionId: String) {
+                    appendLogRes(R.string.ws_log_default_connected)
+                }
+
+                override fun onStateChanged(
+                    connectionId: String,
+                    oldState: WebSocketManager.State,
+                    newState: WebSocketManager.State
+                ) {
+                    appendLogRes(R.string.ws_log_default_state_changed, oldState.name, newState.name)
+                }
+
+                override fun onMessage(connectionId: String, text: String) {
+                    appendLogRes(R.string.ws_log_default_receive_text, text)
+                }
+
+                override fun onMessage(connectionId: String, bytes: ByteArray) {
+                    appendLogRes(R.string.ws_log_default_receive_binary, bytes.size)
+                }
+
+                override fun onClosed(connectionId: String, code: Int, reason: String) {
+                    appendLogRes(R.string.ws_log_default_closed, code, reason)
+                }
+
+                override fun onFailure(connectionId: String, throwable: Throwable) {
+                    appendLogRes(R.string.ws_log_default_failure, throwable.message ?: "")
+                }
+
+                override fun onReconnecting(connectionId: String, attempt: Int) {
+                    appendLogRes(R.string.ws_log_default_reconnecting, attempt)
+                }
+            }
+        )
+        appendLogRes(R.string.ws_log_default_connect_start, defaultUrl)
     }
 }

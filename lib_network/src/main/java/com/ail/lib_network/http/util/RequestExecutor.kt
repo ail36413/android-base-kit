@@ -74,9 +74,11 @@ class RequestExecutor @Inject constructor(
                 // token provider is present: attempt serialized refresh + retry
                 refreshMutex.withLock {
                     // maybe another coroutine already refreshed; try the call once more
+                    var secondAttemptException: Exception? = null
                     val secondAttempt = try {
                         withContext(dispatcher) { call() }
                     } catch (e: Exception) {
+                        secondAttemptException = e
                         null
                     }
 
@@ -117,8 +119,10 @@ class RequestExecutor @Inject constructor(
                             }
                         }
                     } else {
-                        // secondAttempt failed with exception
-                        NetworkResult.TechnicalFailure(ExceptionHandle.handleException(Throwable("call failed during retry")))
+                        // secondAttempt failed with exception, preserve original context
+                        NetworkResult.TechnicalFailure(
+                            ExceptionHandle.handleException(secondAttemptException ?: Throwable("call failed during retry"))
+                        )
                     }
                 }
             }

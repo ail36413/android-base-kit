@@ -7,19 +7,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.Transformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
+
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import jp.wasabeef.glide.transformations.BlurTransformation
 import jp.wasabeef.glide.transformations.ColorFilterTransformation
 import jp.wasabeef.glide.transformations.GrayscaleTransformation
+import java.util.WeakHashMap
+import androidx.annotation.MainThread
 
-private const val TAG_DETACH_LISTENER_KEY = -10002
-
+// 通过弱引用映射保存每个 ImageView 的 detach listener，避免使用 setTag(key, value) 的 key 限制
+private val detachListenerMap = WeakHashMap<ImageView, View.OnAttachStateChangeListener>()
 
 /**
  * 图片加载参数配置
@@ -45,21 +48,23 @@ data class ImageLoadOptions(
     val skipMemoryCache: Boolean = false,
     val skipDiskCache: Boolean = false,
     val cancelOnDetach: Boolean = false,
+    // 仅在 cancelOnDetach=true 时生效：View 重新 attach 后是否自动恢复请求
+    val resumeOnReattach: Boolean = true,
     val callback: ImageLoadCallback? = null,
     var transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
-    // 新增：动画/过渡效果配置
-    val transitionDuration: Int = 300, // 过渡动画时长（毫秒）
-    val disableTransition: Boolean = false, // 是否禁用过渡动画
-    // 新增：加载优先级
-    val priority: com.bumptech.glide.Priority = com.bumptech.glide.Priority.NORMAL, // 加载优先级
-    // 新增：图片解码格式
-    val decodeFormat: com.bumptech.glide.load.DecodeFormat = com.bumptech.glide.load.DecodeFormat.DEFAULT, // 解码格式
-    // 新增：缩略图相关
-    val thumbnailUrl: Any? = null, // 缩略图URL
-    val thumbnailSize: Float = 0.1f // 缩略图比例（0.0-1.0）
+    // 动画过渡配置
+    val transitionDuration: Int = 300,
+    val disableTransition: Boolean = false,
+    // 加载优先级
+    val priority: com.bumptech.glide.Priority = com.bumptech.glide.Priority.NORMAL,
+    // 图片解码格式
+    val decodeFormat: com.bumptech.glide.load.DecodeFormat = com.bumptech.glide.load.DecodeFormat.DEFAULT,
+    // 缩略图配置
+    val thumbnailUrl: Any? = null,
+    val thumbnailSize: Float = 0f
 ) {
     /**
-     * 追加自定义变换（DSL友好）
+     * 追加自定义变换（DSL 友好）
      */
     fun addTransformation(transformation: Transformation<android.graphics.Bitmap>) {
         transformations = transformations + transformation
@@ -68,22 +73,18 @@ data class ImageLoadOptions(
 
 /**
  * 图片加载回调接口
- * 可用于监听加载开始、成功、失败事件。
- *
- * onStart() 加载开始
- * onSuccess(drawable) 加载成功，返回Drawable
- * onFailed(throwable) 加载失败，返回异常
+ * 用于监听加载开始、成功、失败事件
  */
 interface ImageLoadCallback {
-    fun onStart() {} // 加载开始
-    fun onSuccess(drawable: Drawable) {} // 加载成功
-    fun onFailed(throwable: Throwable?) {} // 加载失败
+    fun onStart() {}
+    fun onSuccess(drawable: Drawable) {}
+    fun onFailed(throwable: Throwable?) {}
 }
 
 /**
- * ImageView扩展函数，支持所有参数和DSL方式。
+ * ImageView 扩展函数，支持参数方式和 DSL 方式。
  * 推荐直接调用 imageView.load(...)，或使用DSL imageView.load { ... }
- * 支持圆形、圆角、模糊、占位/错误图、缓存策略、尺寸覆盖、回调等。
+ * 支持圆形、圆角、模糊、占位图、错误图、缓存策略、尺寸覆盖、回调等配置
  *
  * @param url 图片来源（String、Uri、File、Bitmap等）
  * @param placeholder 占位图资源ID（Int）
@@ -108,6 +109,7 @@ interface ImageLoadCallback {
  * @param transformations 自定义变换（List<Transformation<Bitmap>>），可用于扩展更多效果
  * @param options DSL配置（ImageLoadOptions.() -> Unit），支持 transformations = listOf(...) 或 addTransformation(...)
  */
+@MainThread
 fun ImageView.load(
     url: Any? = null,
     placeholder: Int? = null,
@@ -128,6 +130,7 @@ fun ImageView.load(
     skipMemoryCache: Boolean = false,
     skipDiskCache: Boolean = false,
     cancelOnDetach: Boolean = false,
+    resumeOnReattach: Boolean = true,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     transitionDuration: Int = 300,
@@ -135,166 +138,305 @@ fun ImageView.load(
     priority: com.bumptech.glide.Priority = com.bumptech.glide.Priority.NORMAL,
     decodeFormat: com.bumptech.glide.load.DecodeFormat = com.bumptech.glide.load.DecodeFormat.DEFAULT,
     thumbnailUrl: Any? = null,
-    thumbnailSize: Float = 0.1f,
+    thumbnailSize: Float = 0f,
     options: (ImageLoadOptions.() -> Unit)? = null
 ) {
     // 构建参数对象，支持DSL
     val opts = ImageLoadOptions(
         url, placeholder, error, placeholderDrawable, errorDrawable, isCircle, radius, radiusInDp,
         isBlur, blurRadius, blurSampling, isGray, colorFilter, overrideWidth, overrideHeight, cacheStrategy,
-        skipMemoryCache, skipDiskCache, cancelOnDetach, callback, transformations,
+        skipMemoryCache, skipDiskCache, cancelOnDetach, resumeOnReattach, callback, transformations,
         transitionDuration, disableTransition, priority, decodeFormat, thumbnailUrl, thumbnailSize
     ).apply { options?.invoke(this) }
+
+    // 参数兜底，避免非法值导致行为异常
+    val safeTransitionDuration = opts.transitionDuration.coerceAtLeast(0)
+    val safeThumbnailSize = opts.thumbnailSize.coerceIn(0f, 1f)
+    val safeBlurRadius = opts.blurRadius.coerceIn(1, 25)
+    val safeBlurSampling = opts.blurSampling.coerceAtLeast(1)
+
     val context = this.context
     val glide = Glide.with(context)
+    var restartOnAttach: (() -> Unit)? = null
+
     // cancelOnDetach: 监听View detach自动clear，或清理旧监听器
-    val oldListener = this.getTag(TAG_DETACH_LISTENER_KEY) as? View.OnAttachStateChangeListener
+    val oldListener = detachListenerMap.remove(this)
     if (oldListener != null) {
         this.removeOnAttachStateChangeListener(oldListener)
-        this.setTag(TAG_DETACH_LISTENER_KEY, null)
     }
     if (opts.cancelOnDetach) {
         val detachListener = object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {}
+            private var clearedByDetach = false
+
+            override fun onViewAttachedToWindow(v: View) {
+                // RecyclerView 快速抖动时，item 可能 detach/attach 但不会触发 onBind，
+                // 这里可选自动恢复最近一次请求，避免长期停留在 placeholder。
+                if (clearedByDetach && opts.resumeOnReattach) {
+                    clearedByDetach = false
+                    try {
+                        restartOnAttach?.invoke()
+                    } catch (_: Exception) {
+                        // View/Activity 状态异常时忽略
+                    }
+                }
+            }
+
             override fun onViewDetachedFromWindow(v: View) {
-                Glide.with(context).clear(this@load)
+                try {
+                    Glide.with(v).clear(this@load)
+                    clearedByDetach = true
+                } catch (_: Exception) {
+                    // Activity 已销毁，忽略
+                }
             }
         }
         this.addOnAttachStateChangeListener(detachListener)
-        this.setTag(TAG_DETACH_LISTENER_KEY, detachListener)
+        detachListenerMap[this] = detachListener
     }
-    // 加载前清除上一次任务，减少列表错位
-    Glide.with(context).clear(this)
-    opts.callback?.onStart() // 回调提前
+
+    // 不再无条件 clear：首次加载时会增加额外状态切换与重绘开销
+    opts.callback?.onStart()
+
     // 构建 Glide 请求
     var request = glide.load(opts.url)
-        .diskCacheStrategy(opts.cacheStrategy)
-        .skipMemoryCache(opts.skipMemoryCache)
-        .apply(RequestOptions().priority(opts.priority).format(opts.decodeFormat))
+
+    // 仅在非默认值时设置，减少每次请求额外对象与配置开销
+    if (opts.cacheStrategy != DiskCacheStrategy.AUTOMATIC) {
+        request = request.diskCacheStrategy(opts.cacheStrategy)
+    }
+    if (opts.skipMemoryCache) {
+        request = request.skipMemoryCache(true)
+    }
+    if (opts.priority != com.bumptech.glide.Priority.NORMAL ||
+        opts.decodeFormat != com.bumptech.glide.load.DecodeFormat.DEFAULT
+    ) {
+        request = request.apply(RequestOptions().priority(opts.priority).format(opts.decodeFormat))
+    }
+
     // 过渡动画配置
     if (!opts.disableTransition) {
-        request = request.transition(DrawableTransitionOptions.withCrossFade(opts.transitionDuration))
+        // 开启 crossFade，避免圆形/圆角透明区域透出 placeholder 造成“占位图残留”
+        val crossFadeFactory = DrawableCrossFadeFactory.Builder(safeTransitionDuration)
+            .setCrossFadeEnabled(true)
+            .build()
+        request = request.transition(DrawableTransitionOptions.with(crossFadeFactory))
     }
     // 缩略图配置
     if (opts.thumbnailUrl != null) {
         request = request.thumbnail(glide.load(opts.thumbnailUrl))
-    } else if (opts.thumbnailSize in 0.0f..1.0f && opts.thumbnailSize != 0f) {
-        request = request.thumbnail(opts.thumbnailSize)
+    } else if (safeThumbnailSize > 0f) {
+        // 避免使用已弃用的 thumbnail(Float)
+        request = request.thumbnail(glide.load(opts.url).sizeMultiplier(safeThumbnailSize))
     }
-    if (opts.skipDiskCache) request.diskCacheStrategy(DiskCacheStrategy.NONE)
+    if (opts.skipDiskCache) {
+        // skipDiskCache 的优先级高于 cacheStrategy
+        request = request.diskCacheStrategy(DiskCacheStrategy.NONE)
+    }
     // 尺寸覆盖
-    opts.overrideWidth?.let { w -> opts.overrideHeight?.let { h -> request.override(w, h) } }
-    // 占位/错误图优先使用Drawable
-    opts.placeholderDrawable?.let { request.placeholder(it) } ?: opts.placeholder?.let { request.placeholder(it) }
-    opts.errorDrawable?.let { request.error(it) } ?: opts.error?.let { request.error(it) }
+    if ((opts.overrideWidth ?: 0) > 0 && (opts.overrideHeight ?: 0) > 0) {
+        request = request.override(opts.overrideWidth!!, opts.overrideHeight!!)
+    }
+
     // 变换列表
     val transforms = mutableListOf<Transformation<android.graphics.Bitmap>>()
-    // 移除强制 CenterCrop，变换仅根据参数自动添加
-    if (opts.isCircle) transforms.add(CircleCrop()) // 圆形裁剪
-    else if (opts.radius != null && opts.radius > 0) {
-        // 圆角裁剪，支持dp/px
-        val px = if (opts.radiusInDp) (opts.radius * context.resources.displayMetrics.density).toInt() else opts.radius.toInt()
-        transforms.add(RoundedCorners(px))
+
+    // 纯圆形场景优先走 Glide 原生快路径，减少首次冷启动时的额外开销
+    val hasExtraBitmapTransform = opts.radius != null || opts.isBlur || opts.isGray || opts.colorFilter != null || opts.transformations.isNotEmpty()
+    if (opts.isCircle && !hasExtraBitmapTransform) {
+        request = request.circleCrop()
+    } else {
+        if (opts.isCircle) transforms.add(CircleCrop()) // 圆形裁剪
+        else if (opts.radius != null && opts.radius > 0) {
+            // 圆角裁剪，支持dp/px
+            val px = if (opts.radiusInDp) (opts.radius * context.resources.displayMetrics.density).toInt() else opts.radius.toInt()
+            if (px > 0) {
+                transforms.add(RoundedCorners(px))
+            }
+        }
+        if (opts.isBlur) transforms.add(BlurTransformation(safeBlurRadius, safeBlurSampling)) // 高斯模糊
+        if (opts.isGray) transforms.add(GrayscaleTransformation()) // 灰度
+        opts.colorFilter?.let { transforms.add(ColorFilterTransformation(it)) } // 色彩滤镜
+        if (opts.transformations.isNotEmpty()) transforms.addAll(opts.transformations) // 自定义变换
     }
-    if (opts.isBlur && opts.blurRadius > 0) transforms.add(BlurTransformation(opts.blurRadius, opts.blurSampling)) // 高斯模糊
-    if (opts.isGray) transforms.add(GrayscaleTransformation()) // 灰度
-    opts.colorFilter?.let { transforms.add(ColorFilterTransformation(it)) } // 色彩滤镜
-    if (opts.transformations.isNotEmpty()) transforms.addAll(opts.transformations) // 自定义变换
+
+    // 构建 RequestOptions，同时设置占位图、错误图和变换，确保主图加载参数统一
+    var requestOptions: RequestOptions? = null
+
+    fun ensureOptions(): RequestOptions {
+        if (requestOptions == null) requestOptions = RequestOptions()
+        return requestOptions!!
+    }
+
+    // 占位/错误图优先使用Drawable
+    if (opts.placeholderDrawable != null) {
+        requestOptions = ensureOptions().placeholder(opts.placeholderDrawable)
+    } else if (opts.placeholder != null) {
+        requestOptions = ensureOptions().placeholder(opts.placeholder)
+    }
+
+    if (opts.errorDrawable != null) {
+        requestOptions = ensureOptions().error(opts.errorDrawable)
+    } else if (opts.error != null) {
+        requestOptions = ensureOptions().error(opts.error)
+    }
+
     // 应用所有变换
     if (transforms.isNotEmpty()) {
-        request = request.apply(RequestOptions().transform(*transforms.toTypedArray()))
+        requestOptions = ensureOptions().transform(*transforms.toTypedArray())
     }
-    // 加载回调
-    request = request.listener(object : RequestListener<Drawable> {
-        override fun onLoadFailed(
-            e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
-        ): Boolean {
-            opts.callback?.onFailed(e)
-            return false // 继续交给 CustomTarget 处理
+
+    if (requestOptions != null) {
+        request = request.apply(requestOptions)
+    }
+
+    // 仅在外部传入回调时注册 listener，减少默认路径开销
+    if (opts.callback != null) {
+        request = request.listener(object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
+            ): Boolean {
+                opts.callback.onFailed(e)
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: com.bumptech.glide.load.DataSource?, isFirstResource: Boolean
+            ): Boolean {
+                resource?.let { opts.callback.onSuccess(it) }
+                return false
+            }
+        })
+    }
+
+    // 保存一份最终请求用于 re-attach 恢复
+    val finalRequest = request
+    if (opts.cancelOnDetach) {
+        restartOnAttach = {
+            finalRequest.clone().into(this)
         }
-        override fun onResourceReady(
-            resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: com.bumptech.glide.load.DataSource?, isFirstResource: Boolean
-        ): Boolean {
-            resource?.let { opts.callback?.onSuccess(it) }
-            // 可选：可在此处回调数据来源 dataSource
-            return false // 继续交给 CustomTarget 处理
-        }
-    })
-    // 加载到 ImageView（CustomTarget 保证状态）
-    request.into(object : com.bumptech.glide.request.target.CustomTarget<Drawable>() {
-        override fun onResourceReady(resource: Drawable, transition: com.bumptech.glide.request.transition.Transition<in Drawable>?) {
-            this@load.setImageDrawable(resource)
-        }
-        override fun onLoadCleared(placeholder: Drawable?) {
-            this@load.setImageDrawable(placeholder)
-        }
-        override fun onLoadFailed(errorDrawable: Drawable?) {
-            this@load.setImageDrawable(errorDrawable)
-        }
-    })
+    }
+    finalRequest.into(this)
 }
 
 /**
  * 加载圆形图片，等价于 load(url, isCircle = true)
  */
+@MainThread
 fun ImageView.loadCircle(
     url: Any?,
     placeholder: Int? = null,
     error: Int? = null,
+    disableTransition: Boolean = false,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     options: (ImageLoadOptions.() -> Unit)? = null
-) = load(url = url, isCircle = true, placeholder = placeholder, error = error, callback = callback, transformations = transformations, options = options)
+) = load(
+    url = url,
+    isCircle = true,
+    placeholder = placeholder,
+    error = error,
+    disableTransition = disableTransition,
+    callback = callback,
+    transformations = transformations,
+    options = options
+)
 
 /**
  * 加载圆角图片，等价于 load(url, radius = radius, radiusInDp = radiusInDp)
  */
+@MainThread
 fun ImageView.loadRounded(
     url: Any?,
     radius: Float,
     placeholder: Int? = null,
     error: Int? = null,
     radiusInDp: Boolean = true,
+    disableTransition: Boolean = false,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     options: (ImageLoadOptions.() -> Unit)? = null
-) = load(url = url, radius = radius, radiusInDp = radiusInDp, placeholder = placeholder, error = error, callback = callback, transformations = transformations, options = options)
+) = load(
+    url = url,
+    radius = radius,
+    radiusInDp = radiusInDp,
+    placeholder = placeholder,
+    error = error,
+    disableTransition = disableTransition,
+    callback = callback,
+    transformations = transformations,
+    options = options
+)
 
 /**
  * 加载模糊图片，等价于 load(url, isBlur = true, blurRadius = blurRadius, blurSampling = blurSampling)
  */
+@MainThread
 fun ImageView.loadBlur(
     url: Any?,
     blurRadius: Int = 25,
     blurSampling: Int = 1,
     placeholder: Int? = null,
     error: Int? = null,
+    disableTransition: Boolean = false,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     options: (ImageLoadOptions.() -> Unit)? = null
-) = load(url = url, isBlur = true, blurRadius = blurRadius, blurSampling = blurSampling, placeholder = placeholder, error = error, callback = callback, transformations = transformations, options = options)
+) = load(
+    url = url,
+    isBlur = true,
+    blurRadius = blurRadius,
+    blurSampling = blurSampling,
+    placeholder = placeholder,
+    error = error,
+    disableTransition = disableTransition,
+    callback = callback,
+    transformations = transformations,
+    options = options
+)
 
 /**
  * 加载灰度图片，等价于 load(url, isGray = true)
  */
+@MainThread
 fun ImageView.loadGray(
     url: Any?,
     placeholder: Int? = null,
     error: Int? = null,
+    disableTransition: Boolean = false,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     options: (ImageLoadOptions.() -> Unit)? = null
-) = load(url = url, isGray = true, placeholder = placeholder, error = error, callback = callback, transformations = transformations, options = options)
+) = load(
+    url = url,
+    isGray = true,
+    placeholder = placeholder,
+    error = error,
+    disableTransition = disableTransition,
+    callback = callback,
+    transformations = transformations,
+    options = options
+)
 
 /**
  * 加载色彩滤镜图片，等价于 load(url, colorFilter = color)
  */
+@MainThread
 fun ImageView.loadColorFilter(
     url: Any?,
     color: Int,
     placeholder: Int? = null,
     error: Int? = null,
+    disableTransition: Boolean = false,
     callback: ImageLoadCallback? = null,
     transformations: List<Transformation<android.graphics.Bitmap>> = emptyList(),
     options: (ImageLoadOptions.() -> Unit)? = null
-) = load(url = url, colorFilter = color, placeholder = placeholder, error = error, callback = callback, transformations = transformations, options = options)
+) = load(
+    url = url,
+    colorFilter = color,
+    placeholder = placeholder,
+    error = error,
+    disableTransition = disableTransition,
+    callback = callback,
+    transformations = transformations,
+    options = options
+)

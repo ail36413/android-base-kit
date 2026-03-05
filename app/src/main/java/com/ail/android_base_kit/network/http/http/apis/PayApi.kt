@@ -1,9 +1,9 @@
-package com.bohai.apis
+package com.ail.android_base_kit.network.http.http.apis
 
-import com.bohai.model.ApiResponse
+import com.ail.android_base_kit.network.http.model.ApiResponse
 import retrofit2.http.GET
 
 interface PayApi {
-    @GET("/pay/status")
+    @GET("anything/pay/status")
     suspend fun getPayStatus(): ApiResponse<String>
 }

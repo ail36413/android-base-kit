@@ -65,6 +65,31 @@
             android:textColor="#777777"
             android:textSize="12sp" />
 
+        <Button
+            android:id="@+id/btn_toggle_log_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/net_log_level_toggle" />
+
+        <TextView
+            android:id="@+id/tv_log_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/net_log_level_current_auto"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_net_code_mapping"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/net_code_mapping_text"
+            android:textColor="#777777"
+            android:textSize="12sp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

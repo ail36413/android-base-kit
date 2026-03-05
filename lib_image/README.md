@@ -41,6 +41,27 @@ dependencies {
 
 如需自定义 Glide 配置（如缓存大小、网络配置等），请参考 [Glide 官方文档](https://bumptech.github.io/glide/doc/configuration.html) 创建 `AppGlideModule`。
 
+### 全局默认配置（可选）
+
+可在应用启动时统一设置高频默认参数，减少每次调用重复传参：
+
+```kotlin
+ImageLoaderDefaults.update { old ->
+    old.copy(
+        placeholder = R.drawable.placeholder,
+        error = R.drawable.error,
+        cacheStrategy = DiskCacheStrategy.AUTOMATIC,
+        disableTransition = false,
+        cancelOnDetach = true,
+        resumeOnReattach = true
+    )
+}
+```
+
+说明：
+- 单次 `load(...)` 显式传参优先于全局默认
+- 全局默认适合列表页和统一视觉规范场景
+
 ## 功能简介
 - 支持普通图片、圆形、圆角、模糊、灰度、色彩滤镜等多种图片加载场景
 - 支持占位图、错误图（资源ID或Drawable）

@@ -149,11 +149,14 @@ fun ImageView.load(
         transitionDuration, disableTransition, priority, decodeFormat, thumbnailUrl, thumbnailSize
     ).apply { options?.invoke(this) }
 
+    // 合并全局默认配置（显式参数优先）
+    val finalOpts = ImageLoaderDefaults.merge(opts)
+
     // 参数兜底，避免非法值导致行为异常
-    val safeTransitionDuration = opts.transitionDuration.coerceAtLeast(0)
-    val safeThumbnailSize = opts.thumbnailSize.coerceIn(0f, 1f)
-    val safeBlurRadius = opts.blurRadius.coerceIn(1, 25)
-    val safeBlurSampling = opts.blurSampling.coerceAtLeast(1)
+    val safeTransitionDuration = finalOpts.transitionDuration.coerceAtLeast(0)
+    val safeThumbnailSize = finalOpts.thumbnailSize.coerceIn(0f, 1f)
+    val safeBlurRadius = finalOpts.blurRadius.coerceIn(1, 25)
+    val safeBlurSampling = finalOpts.blurSampling.coerceAtLeast(1)
 
     val context = this.context
     val glide = Glide.with(context)
@@ -164,14 +167,14 @@ fun ImageView.load(
     if (oldListener != null) {
         this.removeOnAttachStateChangeListener(oldListener)
     }
-    if (opts.cancelOnDetach) {
+    if (finalOpts.cancelOnDetach) {
         val detachListener = object : View.OnAttachStateChangeListener {
             private var clearedByDetach = false
 
             override fun onViewAttachedToWindow(v: View) {
                 // RecyclerView 快速抖动时，item 可能 detach/attach 但不会触发 onBind，
                 // 这里可选自动恢复最近一次请求，避免长期停留在 placeholder。
-                if (clearedByDetach && opts.resumeOnReattach) {
+                if (clearedByDetach && finalOpts.resumeOnReattach) {
                     clearedByDetach = false
                     try {
                         restartOnAttach?.invoke()
@@ -195,26 +198,26 @@ fun ImageView.load(
     }
 
     // 不再无条件 clear：首次加载时会增加额外状态切换与重绘开销
-    opts.callback?.onStart()
+    finalOpts.callback?.onStart()
 
     // 构建 Glide 请求
-    var request = glide.load(opts.url)
+    var request = glide.load(finalOpts.url)
 
     // 仅在非默认值时设置，减少每次请求额外对象与配置开销
-    if (opts.cacheStrategy != DiskCacheStrategy.AUTOMATIC) {
-        request = request.diskCacheStrategy(opts.cacheStrategy)
+    if (finalOpts.cacheStrategy != DiskCacheStrategy.AUTOMATIC) {
+        request = request.diskCacheStrategy(finalOpts.cacheStrategy)
     }
-    if (opts.skipMemoryCache) {
+    if (finalOpts.skipMemoryCache) {
         request = request.skipMemoryCache(true)
     }
-    if (opts.priority != com.bumptech.glide.Priority.NORMAL ||
-        opts.decodeFormat != com.bumptech.glide.load.DecodeFormat.DEFAULT
+    if (finalOpts.priority != com.bumptech.glide.Priority.NORMAL ||
+        finalOpts.decodeFormat != com.bumptech.glide.load.DecodeFormat.DEFAULT
     ) {
-        request = request.apply(RequestOptions().priority(opts.priority).format(opts.decodeFormat))
+        request = request.apply(RequestOptions().priority(finalOpts.priority).format(finalOpts.decodeFormat))
     }
 
     // 过渡动画配置
-    if (!opts.disableTransition) {
+    if (!finalOpts.disableTransition) {
         // 开启 crossFade，避免圆形/圆角透明区域透出 placeholder 造成“占位图残留”
         val crossFadeFactory = DrawableCrossFadeFactory.Builder(safeTransitionDuration)
             .setCrossFadeEnabled(true)
@@ -222,41 +225,41 @@ fun ImageView.load(
         request = request.transition(DrawableTransitionOptions.with(crossFadeFactory))
     }
     // 缩略图配置
-    if (opts.thumbnailUrl != null) {
-        request = request.thumbnail(glide.load(opts.thumbnailUrl))
+    if (finalOpts.thumbnailUrl != null) {
+        request = request.thumbnail(glide.load(finalOpts.thumbnailUrl))
     } else if (safeThumbnailSize > 0f) {
         // 避免使用已弃用的 thumbnail(Float)
-        request = request.thumbnail(glide.load(opts.url).sizeMultiplier(safeThumbnailSize))
+        request = request.thumbnail(glide.load(finalOpts.url).sizeMultiplier(safeThumbnailSize))
     }
-    if (opts.skipDiskCache) {
+    if (finalOpts.skipDiskCache) {
         // skipDiskCache 的优先级高于 cacheStrategy
         request = request.diskCacheStrategy(DiskCacheStrategy.NONE)
     }
     // 尺寸覆盖
-    if ((opts.overrideWidth ?: 0) > 0 && (opts.overrideHeight ?: 0) > 0) {
-        request = request.override(opts.overrideWidth!!, opts.overrideHeight!!)
+    if ((finalOpts.overrideWidth ?: 0) > 0 && (finalOpts.overrideHeight ?: 0) > 0) {
+        request = request.override(finalOpts.overrideWidth!!, finalOpts.overrideHeight!!)
     }
 
     // 变换列表
     val transforms = mutableListOf<Transformation<android.graphics.Bitmap>>()
 
     // 纯圆形场景优先走 Glide 原生快路径，减少首次冷启动时的额外开销
-    val hasExtraBitmapTransform = opts.radius != null || opts.isBlur || opts.isGray || opts.colorFilter != null || opts.transformations.isNotEmpty()
-    if (opts.isCircle && !hasExtraBitmapTransform) {
+    val hasExtraBitmapTransform = finalOpts.radius != null || finalOpts.isBlur || finalOpts.isGray || finalOpts.colorFilter != null || finalOpts.transformations.isNotEmpty()
+    if (finalOpts.isCircle && !hasExtraBitmapTransform) {
         request = request.circleCrop()
     } else {
-        if (opts.isCircle) transforms.add(CircleCrop()) // 圆形裁剪
-        else if (opts.radius != null && opts.radius > 0) {
+        if (finalOpts.isCircle) transforms.add(CircleCrop()) // 圆形裁剪
+        else if (finalOpts.radius != null && finalOpts.radius > 0) {
             // 圆角裁剪，支持dp/px
-            val px = if (opts.radiusInDp) (opts.radius * context.resources.displayMetrics.density).toInt() else opts.radius.toInt()
+            val px = if (finalOpts.radiusInDp) (finalOpts.radius * context.resources.displayMetrics.density).toInt() else finalOpts.radius.toInt()
             if (px > 0) {
                 transforms.add(RoundedCorners(px))
             }
         }
-        if (opts.isBlur) transforms.add(BlurTransformation(safeBlurRadius, safeBlurSampling)) // 高斯模糊
-        if (opts.isGray) transforms.add(GrayscaleTransformation()) // 灰度
-        opts.colorFilter?.let { transforms.add(ColorFilterTransformation(it)) } // 色彩滤镜
-        if (opts.transformations.isNotEmpty()) transforms.addAll(opts.transformations) // 自定义变换
+        if (finalOpts.isBlur) transforms.add(BlurTransformation(safeBlurRadius, safeBlurSampling)) // 高斯模糊
+        if (finalOpts.isGray) transforms.add(GrayscaleTransformation()) // 灰度
+        finalOpts.colorFilter?.let { transforms.add(ColorFilterTransformation(it)) } // 色彩滤镜
+        if (finalOpts.transformations.isNotEmpty()) transforms.addAll(finalOpts.transformations) // 自定义变换
     }
 
     // 构建 RequestOptions，同时设置占位图、错误图和变换，确保主图加载参数统一
@@ -268,16 +271,16 @@ fun ImageView.load(
     }
 
     // 占位/错误图优先使用Drawable
-    if (opts.placeholderDrawable != null) {
-        requestOptions = ensureOptions().placeholder(opts.placeholderDrawable)
-    } else if (opts.placeholder != null) {
-        requestOptions = ensureOptions().placeholder(opts.placeholder)
+    if (finalOpts.placeholderDrawable != null) {
+        requestOptions = ensureOptions().placeholder(finalOpts.placeholderDrawable)
+    } else if (finalOpts.placeholder != null) {
+        requestOptions = ensureOptions().placeholder(finalOpts.placeholder)
     }
 
-    if (opts.errorDrawable != null) {
-        requestOptions = ensureOptions().error(opts.errorDrawable)
-    } else if (opts.error != null) {
-        requestOptions = ensureOptions().error(opts.error)
+    if (finalOpts.errorDrawable != null) {
+        requestOptions = ensureOptions().error(finalOpts.errorDrawable)
+    } else if (finalOpts.error != null) {
+        requestOptions = ensureOptions().error(finalOpts.error)
     }
 
     // 应用所有变换
@@ -290,19 +293,19 @@ fun ImageView.load(
     }
 
     // 仅在外部传入回调时注册 listener，减少默认路径开销
-    if (opts.callback != null) {
+    if (finalOpts.callback != null) {
         request = request.listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean
             ): Boolean {
-                opts.callback.onFailed(e)
+                finalOpts.callback.onFailed(e)
                 return false
             }
 
             override fun onResourceReady(
                 resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: com.bumptech.glide.load.DataSource?, isFirstResource: Boolean
             ): Boolean {
-                resource?.let { opts.callback.onSuccess(it) }
+                resource?.let { finalOpts.callback.onSuccess(it) }
                 return false
             }
         })
@@ -310,7 +313,7 @@ fun ImageView.load(
 
     // 保存一份最终请求用于 re-attach 恢复
     val finalRequest = request
-    if (opts.cancelOnDetach) {
+    if (finalOpts.cancelOnDetach) {
         restartOnAttach = {
             finalRequest.clone().into(this)
         }

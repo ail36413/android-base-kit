@@ -1,5 +1,7 @@
 package com.ail.lib_network.http.exception
 
+import com.ail.lib_network.http.model.NetCode
+
 /**
  * 基础库统一异常基类
  * 仅包含技术层面的错误描述，不涉及业务语义
@@ -26,7 +28,7 @@ class ServerException(code: Int, message: String) :
  * 解析层异常：JSON 格式错误、字段类型不匹配、Null 安全校验失败等
  */
 class ParseException(message: String, cause: Throwable? = null) :
-    BaseNetException(-1001, message, cause)
+    BaseNetException(NetCode.Tech.PARSE_ERROR, message, cause)
 
 /**
  * 业务码非成功：response.code != 配置的 successCode
@@ -39,4 +41,4 @@ class BusinessFailureException(val businessCode: Int, val businessMsg: String) :
  * 其他未知异常
  */
 class UnknownNetException(message: String, cause: Throwable? = null) :
-    BaseNetException(-1000, message, cause)
+    BaseNetException(NetCode.Tech.UNKNOWN, message, cause)

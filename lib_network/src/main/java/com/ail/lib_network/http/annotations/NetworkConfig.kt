@@ -17,6 +17,7 @@ import java.io.File
  * @param writeTimeout 写入超时（秒），不设则用基础库默认 15
  * @param defaultSuccessCode 全局默认成功码，不设则用基础库默认 0
  * @param isLogEnabled 是否开启网络日志，不设则用基础库默认 false
+ * @param networkLogLevel 网络日志级别；AUTO 表示沿用 isLogEnabled 兼容行为
  * @param extraHeaders 每次请求都会带上的公共请求头（如 X-App-Version、X-Version-Code），由项目层提供
  * @param cacheDir 可选：OkHttp 缓存目录（若提供且 cacheSize 也提供则启用 Cache）
  * @param cacheSize 可选：缓存大小（字节），与 cacheDir 配合使用
@@ -32,6 +33,7 @@ data class NetworkConfig(
     val writeTimeout: Long = 15L,
     val defaultSuccessCode: Int = 0,
     val isLogEnabled: Boolean = false,
+    val networkLogLevel: NetworkLogLevel = NetworkLogLevel.AUTO,
     val extraHeaders: Map<String, String> = emptyMap(),
     val cacheDir: File? = null,
     val cacheSize: Long? = null,

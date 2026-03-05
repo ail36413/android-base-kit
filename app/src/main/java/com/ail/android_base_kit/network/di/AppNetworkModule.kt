@@ -13,6 +13,7 @@ import com.ail.android_base_kit.network.http.network.DeviceIdInterceptor
 import com.ail.lib_network.http.annotations.AppInterceptor
 import com.ail.lib_network.http.annotations.INetLogger
 import com.ail.lib_network.http.annotations.NetworkConfig
+import com.ail.lib_network.http.annotations.NetworkLogLevel
 import com.ail.android_base_kit.network.http.model.ResponseMappingPresets
 import com.ail.lib_network.websocket.IWebSocketLogger
 import com.ail.lib_network.http.auth.TokenProvider
@@ -46,6 +47,7 @@ object AppNetworkModule {
         return NetworkConfig(
             baseUrl = HTTP_BIN_BASE_URL,
             isLogEnabled = true,
+            networkLogLevel = NetworkLogLevel.BODY,
             extraHeaders = mapOf(
                 "X-App-Version" to "1111",
                 "X-Version-Code" to "1.0.0"

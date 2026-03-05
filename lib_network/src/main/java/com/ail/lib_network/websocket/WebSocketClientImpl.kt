@@ -2,6 +2,7 @@ package com.ail.lib_network.websocket
 
 import android.os.Handler
 import android.os.Looper
+import com.ail.lib_network.http.model.NetCode
 import okhttp3.*
 import okio.ByteString
 import okio.ProtocolException
@@ -300,7 +301,7 @@ internal class WebSocketClientImpl(
                 this@WebSocketClientImpl.webSocket = null
                 changeState(WebSocketManager.State.DISCONNECTED)
 
-                val isUnrecoverable = (response?.code in setOf(401, 403, 404)) ||
+                val isUnrecoverable = (response?.code in setOf(NetCode.Biz.UNAUTHORIZED, NetCode.Biz.FORBIDDEN, NetCode.Biz.NOT_FOUND)) ||
                         t is UnknownHostException ||
                         t is ProtocolException
 

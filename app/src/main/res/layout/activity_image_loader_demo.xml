@@ -365,5 +365,20 @@
             android:clipToPadding="false"
             android:paddingTop="4dp"
             android:paddingBottom="4dp" />
+
+        <!-- 全局图片默认值开关 -->
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchImageGlobalDefaults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/image_global_defaults_off" />
+
+        <TextView
+            android:id="@+id/textImageGlobalDefaults"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="@string/image_global_defaults_hint"
+            android:textColor="#666666" />
     </LinearLayout>
 </ScrollView>

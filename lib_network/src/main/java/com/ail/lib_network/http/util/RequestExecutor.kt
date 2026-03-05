@@ -5,6 +5,7 @@ import com.ail.lib_network.http.auth.TokenProvider
 import com.ail.lib_network.http.auth.UnauthorizedHandler
 import com.ail.lib_network.http.exception.ExceptionHandle
 import com.ail.lib_network.http.model.IBaseResponse
+import com.ail.lib_network.http.model.NetCode
 import com.ail.lib_network.http.model.NetEvent
 import com.ail.lib_network.http.model.NetEventStage
 import com.ail.lib_network.http.model.NetworkResult
@@ -60,7 +61,7 @@ class RequestExecutor @Inject constructor(
         }
 
         // If business failure indicates expired token (code==401), handle refresh/retry or notify unauthorized
-        val finalResult = if (result is NetworkResult.BusinessFailure && result.code == 401) {
+        val finalResult = if (result is NetworkResult.BusinessFailure && result.code == NetCode.Biz.UNAUTHORIZED) {
             if (!tokenProviderOptional.isPresent) {
                 // no TokenProvider configured: notify unauthorized (if provided) and return original business failure
                 try {
@@ -86,11 +87,11 @@ class RequestExecutor @Inject constructor(
                         val effectiveSuccessCode = successCode ?: configProvider.current.defaultSuccessCode
                         if (secondAttempt.code == effectiveSuccessCode) {
                             NetworkResult.Success(secondAttempt.data)
-                        } else if (secondAttempt.code != 401) {
+                        } else if (secondAttempt.code != NetCode.Biz.UNAUTHORIZED) {
                             // business failure but not token-expired anymore
                             NetworkResult.BusinessFailure(secondAttempt.code, secondAttempt.msg)
                         } else {
-                            // still 401 -> try refresh
+                            // still unauthorized -> try refresh
                             val refreshed = try {
                                 tokenProviderOptional.get().refreshTokenSuspend()
                             } catch (_: Throwable) {

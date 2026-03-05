@@ -278,13 +278,28 @@ result
 
 适用场景：`联调阶段`、`多环境排查`
 
-### 3.1 开启日志（简单方式）
+### 3.1 开启日志（兼容写法）
 ```kotlin
 NetworkConfig(
     baseUrl = "https://httpbin.org/",
     isLogEnabled = true
 )
 ```
+
+### 3.1.1 推荐：使用日志级别
+```kotlin
+NetworkConfig(
+    baseUrl = "https://httpbin.org/",
+    networkLogLevel = NetworkLogLevel.BODY
+)
+```
+
+可选值：
+- `AUTO`：沿用 `isLogEnabled`（true -> BODY，false -> NONE）
+- `NONE`：关闭日志
+- `BASIC`：请求行/响应行
+- `HEADERS`：请求头/响应头
+- `BODY`：完整请求体/响应体
 
 ### 3.2 自定义日志输出（可选）
 ```kotlin
@@ -477,7 +492,8 @@ fun provideWebSocketOkHttpClient(): OkHttpClient {
 - `baseUrl`：必填，必须 `http/https` 且以 `/` 结尾
 - `connectTimeout/readTimeout/writeTimeout`：默认 15 秒
 - `defaultSuccessCode`：默认 0
-- `isLogEnabled`：默认 false
+- `isLogEnabled`：默认 false（兼容开关）
+- `networkLogLevel`：默认 `AUTO`（推荐使用分级日志）
 - `extraHeaders`：默认空
 - `cacheDir/cacheSize`：同时提供时启用 OkHttp Cache
 - `enableRetryInterceptor/retryMaxAttempts/retryInitialBackoffMs`：重试相关
@@ -500,6 +516,12 @@ fun provideWebSocketOkHttpClient(): OkHttpClient {
 ## 9. 错误码与异常处理速查
 
 适用场景：`统一错误处理`、`线上问题定位`
+
+### 9.0 错误码常量入口
+统一常量定义在：`com.ail.lib_network.http.model.NetCode`
+
+- 业务码：`NetCode.Biz.*`（如 `UNAUTHORIZED`）
+- 技术码：`NetCode.Tech.*`（如 `REQUEST_CANCELED`）
 
 ### 9.1 `NetworkResult` 三种结果
 - `Success<T>`：请求成功，数据在 `data`

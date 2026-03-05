@@ -1,5 +1,6 @@
 package com.ail.lib_network.http.exception
 
+import com.ail.lib_network.http.model.NetCode
 import com.ail.lib_network.http.util.NetErrorMessage
 import com.google.gson.JsonParseException
 import com.google.gson.JsonSyntaxException
@@ -29,7 +30,7 @@ object ExceptionHandle {
             is BaseNetException -> e
 
             is SocketTimeoutException -> {
-                val code = -1
+                val code = NetCode.Tech.TIMEOUT
                 RequestException(
                     code = code,
                     message = NetErrorMessage.msg(code, "网络连接超时"),
@@ -37,7 +38,7 @@ object ExceptionHandle {
                 )
             }
             is ConnectException, is UnknownHostException -> {
-                val code = -2
+                val code = NetCode.Tech.NO_NETWORK
                 RequestException(
                     code = code,
                     message = NetErrorMessage.msg(code, "网络连接异常，请检查网络"),
@@ -45,7 +46,7 @@ object ExceptionHandle {
                 )
             }
             is SSLException -> {
-                val code = -3
+                val code = NetCode.Tech.SSL_ERROR
                 RequestException(
                     code = code,
                     message = NetErrorMessage.msg(code, "SSL 证书校验失败"),
@@ -53,7 +54,7 @@ object ExceptionHandle {
                 )
             }
             is java.util.concurrent.CancellationException -> {
-                val code = -999
+                val code = NetCode.Tech.REQUEST_CANCELED
                 RequestException(
                     code = code,
                     message = NetErrorMessage.msg(code, "请求已取消"),
@@ -71,19 +72,19 @@ object ExceptionHandle {
 
             is JsonParseException, is JsonSyntaxException, is JSONException -> {
                 ParseException(
-                    message = NetErrorMessage.msg(-1001, "数据解析异常，请检查数据结构"),
+                    message = NetErrorMessage.msg(NetCode.Tech.PARSE_ERROR, "数据解析异常，请检查数据结构"),
                     cause = e
                 )
             }
             is ClassCastException -> {
                 ParseException(
-                    message = NetErrorMessage.msg(-1001, "类型转换异常"),
+                    message = NetErrorMessage.msg(NetCode.Tech.PARSE_ERROR, "类型转换异常"),
                     cause = e
                 )
             }
 
             else -> {
-                val code = -1000
+                val code = NetCode.Tech.UNKNOWN
                 UnknownNetException(
                     message = NetErrorMessage.msg(code, e.message ?: "未知网络错误"),
                     cause = e

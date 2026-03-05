@@ -91,6 +91,10 @@
     <string name="image_bitmap_failed">加载Bitmap失败: %1$s</string>
     <string name="image_pause_done">已暂停所有加载请求</string>
     <string name="image_resume_done">已恢复所有加载请求</string>
+    <string name="image_global_defaults_off">全局默认配置: 关闭</string>
+    <string name="image_global_defaults_on">全局默认配置: 开启</string>
+    <string name="image_global_defaults_hint">可切换统一 placeholder/error/cancelOnDetach 默认值</string>
+    <string name="image_global_defaults_applied">已应用全局默认配置（新请求生效）</string>
 
     <!-- Network demo UI strings -->
     <string name="net_demo_title">HTTP 网络库演示</string>
@@ -105,6 +109,11 @@
     <string name="response_mapping_hint">切换后对新发起请求生效，用于演示全局返回字段映射</string>
     <string name="response_mapping_applied_standard">已切换为 code/msg/data 全局映射</string>
     <string name="response_mapping_applied_status_message">已切换为 status/message/data 全局映射</string>
+    <string name="net_log_level_toggle">切换日志级别（NONE/BASIC/HEADERS/BODY）</string>
+    <string name="net_log_level_current_auto">当前日志级别: AUTO</string>
+    <string name="net_log_level_current_fmt">当前日志级别: %1$s</string>
+    <string name="net_log_level_applied">已切换日志级别: %1$s（新请求生效）</string>
+    <string name="net_code_mapping_text">NetCode 映射: success=%1$d, unauthorized=%2$d, canceled=%3$d, unknown=%4$d, parse=%5$d</string>
 
     <!-- Main page UI strings -->
     <string name="main_title">Android Base Kit</string>

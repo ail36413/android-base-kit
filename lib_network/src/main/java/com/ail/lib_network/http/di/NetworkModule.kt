@@ -3,6 +3,7 @@ package com.ail.lib_network.http.di
 import com.ail.lib_network.http.annotations.AppInterceptor
 import com.ail.lib_network.http.annotations.INetLogger
 import com.ail.lib_network.http.annotations.NetworkConfigProvider
+import com.ail.lib_network.http.annotations.NetworkLogLevel
 import com.ail.lib_network.http.auth.TokenAuthenticator
 import com.ail.lib_network.http.auth.TokenProvider
 import com.ail.lib_network.http.interceptor.DynamicBaseUrlInterceptor
@@ -54,6 +55,18 @@ object NetworkModule {
         val netLogger = netLoggerOptional.orDefault(NOOP_INET_LOGGER)
         val customInterceptors = optionalCustomInterceptors.orDefault(emptyMap())
 
+        val dynamicLoggingInterceptor = Interceptor { chain ->
+            val currentConfig = configProvider.current
+            val level = resolveHttpLogLevel(currentConfig)
+            if (level == HttpLoggingInterceptor.Level.NONE) {
+                chain.proceed(chain.request())
+            } else {
+                HttpLoggingInterceptor(PrettyNetLogger(netLogger)).apply {
+                    this.level = level
+                }.intercept(chain)
+            }
+        }
+
         val builder = OkHttpClient.Builder()
             .connectTimeout(config.connectTimeout, TimeUnit.SECONDS)
             .readTimeout(config.readTimeout, TimeUnit.SECONDS)
@@ -71,6 +84,8 @@ object NetworkModule {
         customInterceptors.toSortedMap().forEach { (_, interceptor) ->
             builder.addInterceptor(interceptor)
         }
+
+        builder.addInterceptor(dynamicLoggingInterceptor)
 
         // Optional: add retry interceptor as configured
         if (config.enableRetryInterceptor) {
@@ -96,13 +111,6 @@ object NetworkModule {
             } catch (_: Throwable) {
                 // ignore auth setup failure
             }
-        }
-
-        if (config.isLogEnabled) {
-            val loggingInterceptor = HttpLoggingInterceptor(PrettyNetLogger(netLogger)).apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-            builder.addInterceptor(loggingInterceptor)
         }
 
         // If cacheDir and cacheSize are provided, enable OkHttp cache
@@ -153,6 +161,20 @@ object NetworkModule {
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()
             }
+        }
+    }
+
+    private fun resolveHttpLogLevel(config: com.ail.lib_network.http.annotations.NetworkConfig): HttpLoggingInterceptor.Level {
+        return when (config.networkLogLevel) {
+            NetworkLogLevel.AUTO -> if (config.isLogEnabled) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+            NetworkLogLevel.NONE -> HttpLoggingInterceptor.Level.NONE
+            NetworkLogLevel.BASIC -> HttpLoggingInterceptor.Level.BASIC
+            NetworkLogLevel.HEADERS -> HttpLoggingInterceptor.Level.HEADERS
+            NetworkLogLevel.BODY -> HttpLoggingInterceptor.Level.BODY
         }
     }
 }

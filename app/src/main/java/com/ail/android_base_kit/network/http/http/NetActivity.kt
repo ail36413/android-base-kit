@@ -19,9 +19,11 @@ import com.ail.android_base_kit.network.http.model.CreateUserRequest
 import com.ail.android_base_kit.network.http.model.StatusResponse
 import com.ail.android_base_kit.network.http.model.ResponseMappingPresets
 import com.ail.lib_network.http.annotations.NetworkConfigProvider
+import com.ail.lib_network.http.annotations.NetworkLogLevel
 import okhttp3.ResponseBody
 import com.ail.lib_network.http.model.NetworkResult
 import com.ail.lib_network.http.model.ProgressInfo
+import com.ail.lib_network.http.model.NetCode
 import com.ail.lib_network.http.model.onBusinessFailure
 import com.ail.lib_network.http.model.onTechnicalFailure
 import com.ail.lib_network.http.model.onSuccess
@@ -92,6 +94,16 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private lateinit var btnStatusModel: Button
     private lateinit var ivPreview: ImageView
     private lateinit var switchResponseMapping: SwitchCompat
+    private lateinit var btnToggleLogLevel: Button
+    private lateinit var tvLogLevel: TextView
+    private lateinit var tvNetCodeMapping: TextView
+
+    private val supportedLogLevels = listOf(
+        NetworkLogLevel.NONE,
+        NetworkLogLevel.BASIC,
+        NetworkLogLevel.HEADERS,
+        NetworkLogLevel.BODY
+    )
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -128,6 +140,9 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         btnStatusModel = findViewById(R.id.btn_status_model)
         ivPreview = findViewById(R.id.iv_preview)
         switchResponseMapping = findViewById(R.id.switch_response_mapping)
+        btnToggleLogLevel = findViewById(R.id.btn_toggle_log_level)
+        tvLogLevel = findViewById(R.id.tv_log_level)
+        tvNetCodeMapping = findViewById(R.id.tv_net_code_mapping)
 
         btnGet.setOnClickListener { doGet() }
         btnPost.setOnClickListener { doPost() }
@@ -152,6 +167,8 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         btnStatusModel.setOnClickListener { doStatusModelDemo() }
 
         setupResponseMappingSwitch()
+        setupLogLevelUi()
+        renderNetCodeMapping()
     }
 
     private fun setStatus(@StringRes resId: Int, vararg args: Any) {
@@ -341,7 +358,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         file?.let { ivPreview.setImageURI(Uri.fromFile(it)) }
                     }
                     .onTechnicalFailure { e ->
-                        if (e.code == -999) {
+                        if (e.code == NetCode.Tech.REQUEST_CANCELED) {
                             setStatusText(R.string.download_cancelled)
                         } else {
                             setStatus(R.string.download_fail, e.message ?: "")
@@ -521,6 +538,61 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             } else {
                 R.string.response_mapping_applied_standard
             }
+        )
+    }
+
+    private fun setupLogLevelUi() {
+        val current = networkConfigProvider.current.networkLogLevel
+        val initial = if (current == NetworkLogLevel.AUTO) {
+            if (networkConfigProvider.current.isLogEnabled) NetworkLogLevel.BODY else NetworkLogLevel.NONE
+        } else {
+            current
+        }
+        renderLogLevel(initial)
+        btnToggleLogLevel.setOnClickListener {
+            val active = currentEffectiveLogLevel()
+            val currentIndex = supportedLogLevels.indexOf(active).takeIf { it >= 0 } ?: 0
+            val next = supportedLogLevels[(currentIndex + 1) % supportedLogLevels.size]
+            applyNetworkLogLevel(next)
+        }
+    }
+
+    private fun currentEffectiveLogLevel(): NetworkLogLevel {
+        val config = networkConfigProvider.current
+        return if (config.networkLogLevel == NetworkLogLevel.AUTO) {
+            if (config.isLogEnabled) NetworkLogLevel.BODY else NetworkLogLevel.NONE
+        } else {
+            config.networkLogLevel
+        }
+    }
+
+    private fun applyNetworkLogLevel(level: NetworkLogLevel) {
+        networkConfigProvider.update { old ->
+            old.copy(
+                networkLogLevel = level,
+                // 保持 AUTO 兼容语义：这里同步布尔开关，便于旧代码感知
+                isLogEnabled = level != NetworkLogLevel.NONE
+            )
+        }
+        renderLogLevel(level)
+        setStatus(
+            R.string.net_log_level_applied,
+            level.name
+        )
+    }
+
+    private fun renderLogLevel(level: NetworkLogLevel) {
+        tvLogLevel.text = getString(R.string.net_log_level_current_fmt, level.name)
+    }
+
+    private fun renderNetCodeMapping() {
+        tvNetCodeMapping.text = getString(
+            R.string.net_code_mapping_text,
+            NetCode.Biz.SUCCESS,
+            NetCode.Biz.UNAUTHORIZED,
+            NetCode.Tech.REQUEST_CANCELED,
+            NetCode.Tech.UNKNOWN,
+            NetCode.Tech.PARSE_ERROR
         )
     }
 

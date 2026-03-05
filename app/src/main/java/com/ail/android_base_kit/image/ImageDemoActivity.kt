@@ -9,10 +9,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ail.android_base_kit.R
 import com.ail.lib_image.ImageLoadCallback
+import com.ail.lib_image.ImageLoaderDefaults
 import com.ail.lib_image.ImageLoaderUtils
 import com.ail.lib_image.load
 import com.ail.lib_image.loadBlur
@@ -58,6 +60,8 @@ class ImageDemoActivity : AppCompatActivity() {
     private lateinit var btnPause: Button
     private lateinit var btnResume: Button
     private lateinit var textPauseResume: TextView
+    private lateinit var switchImageGlobalDefaults: SwitchCompat
+    private lateinit var textImageGlobalDefaults: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +98,8 @@ class ImageDemoActivity : AppCompatActivity() {
         btnPause = findViewById(R.id.btnPause)
         btnResume = findViewById(R.id.btnResume)
         textPauseResume = findViewById(R.id.textPauseResume)
-
+        switchImageGlobalDefaults = findViewById(R.id.switchImageGlobalDefaults)
+        textImageGlobalDefaults = findViewById(R.id.textImageGlobalDefaults)
 
         // 基础加载（对比原生 Glide 时关闭过渡动画，避免首帧视觉慢一拍）
         imageNormal.load(url, disableTransition = true)
@@ -288,6 +293,8 @@ class ImageDemoActivity : AppCompatActivity() {
             ImageLoaderUtils.resumeRequests(this)
             textPauseResume.text = getString(R.string.image_resume_done)
         }
+
+        setupImageGlobalDefaultsSwitch()
     }
 
     private fun setupRecyclerReuseDemo() {
@@ -300,6 +307,34 @@ class ImageDemoActivity : AppCompatActivity() {
         )
         recyclerReuse.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         recyclerReuse.adapter = ReuseAdapter(demoUrls)
+    }
+
+    private fun setupImageGlobalDefaultsSwitch() {
+        switchImageGlobalDefaults.setOnCheckedChangeListener(null)
+        switchImageGlobalDefaults.isChecked = false
+        switchImageGlobalDefaults.text = getString(R.string.image_global_defaults_off)
+        textImageGlobalDefaults.text = getString(R.string.image_global_defaults_hint)
+
+        switchImageGlobalDefaults.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                ImageLoaderDefaults.update {
+                    it.copy(
+                        placeholder = R.drawable.placeholder,
+                        error = R.drawable.error,
+                        cacheStrategy = DiskCacheStrategy.AUTOMATIC,
+                        disableTransition = false,
+                        cancelOnDetach = true,
+                        resumeOnReattach = true
+                    )
+                }
+                switchImageGlobalDefaults.text = getString(R.string.image_global_defaults_on)
+                textImageGlobalDefaults.text = getString(R.string.image_global_defaults_applied)
+            } else {
+                ImageLoaderDefaults.update { com.ail.lib_image.ImageGlobalDefaults() }
+                switchImageGlobalDefaults.text = getString(R.string.image_global_defaults_off)
+                textImageGlobalDefaults.text = getString(R.string.image_global_defaults_hint)
+            }
+        }
     }
 
     private class ReuseAdapter(private val urls: List<String>) : RecyclerView.Adapter<ReuseAdapter.VH>() {
@@ -327,4 +362,3 @@ class ImageDemoActivity : AppCompatActivity() {
         override fun getItemCount(): Int = 30
     }
 }
-

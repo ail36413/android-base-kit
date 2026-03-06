@@ -1,5 +1,8 @@
 package com.ail.android_base_kit.util
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -15,6 +18,7 @@ import com.ail.lib_util.device.AppInfoUtil
 import com.ail.lib_util.device.ClipboardUtil
 import com.ail.lib_util.device.IntentUtil
 import com.ail.lib_util.device.NetworkUtil
+import com.ail.lib_util.device.PermissionUtil
 import com.ail.lib_util.log.LogUtil
 import com.ail.lib_util.storage.CacheUtil
 import com.ail.lib_util.storage.FilePathUtil
@@ -28,6 +32,7 @@ import com.ail.lib_util.text.ChecksumUtil
 import com.ail.lib_util.text.CollectionUtil
 import com.ail.lib_util.text.DecimalUtil
 import com.ail.lib_util.text.EncodeUtil
+import com.ail.lib_util.text.EncryptUtil
 import com.ail.lib_util.text.FormatUtil
 import com.ail.lib_util.text.HexUtil
 import com.ail.lib_util.text.IdUtil
@@ -53,6 +58,10 @@ import com.ail.lib_util.ui.ToastUtil
 import com.ail.lib_util.ui.ViewUtil
 
 class UtilDemoActivity : AppCompatActivity() {
+
+    private companion object {
+        const val REQUEST_CODE_PERMISSION_DEMO = 1001
+    }
 
     private lateinit var tvStatus: TextView
     private lateinit var etKey: EditText
@@ -221,6 +230,21 @@ class UtilDemoActivity : AppCompatActivity() {
             setStatus("AppInfoUtil", getString(R.string.util_status_app_info, pkg, verName, verCode.toString()))
         }
 
+        findViewById<Button>(R.id.btn_permission_util_demo).setOnClickListener {
+            val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                arrayOf(Manifest.permission.CAMERA)
+            }
+            val denied = PermissionUtil.deniedPermissions(this, *permissions)
+            if (denied.isEmpty()) {
+                setStatus("PermissionUtil", getString(R.string.util_status_permission_granted))
+            } else {
+                PermissionUtil.request(this, REQUEST_CODE_PERMISSION_DEMO, *denied.toTypedArray())
+                setStatus("PermissionUtil", getString(R.string.util_status_permission_requesting, denied.joinToString()))
+            }
+        }
+
         findViewById<Button>(R.id.btn_open_browser).setOnClickListener {
             val ok = IntentUtil.openBrowser("https://github.com/Blankj/AndroidUtilCode")
             setStatus("IntentUtil", getString(if (ok) R.string.util_status_intent_success else R.string.util_status_intent_failed, "openBrowser"))
@@ -308,6 +332,15 @@ class UtilDemoActivity : AppCompatActivity() {
                     invalidFallback,
                 ),
             )
+        }
+
+        findViewById<Button>(R.id.btn_encrypt_util_demo).setOnClickListener {
+            val raw = etValue.text.toString().ifBlank { "android-base-kit" }
+            val key = etKey.text.toString().ifBlank { "demo_key_2026" }
+            val encrypted = EncryptUtil.aesEncrypt(raw, key)
+            val decrypted = EncryptUtil.aesDecrypt(encrypted, key).orEmpty()
+            val hmac = EncryptUtil.hmacSha256(raw, key).take(16)
+            setStatus("EncryptUtil", getString(R.string.util_status_encrypt_demo, encrypted.take(24), decrypted, hmac))
         }
 
         findViewById<Button>(R.id.btn_file_util_demo).setOnClickListener {
@@ -536,6 +569,23 @@ class UtilDemoActivity : AppCompatActivity() {
                 ),
             )
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_CODE_PERMISSION_DEMO) return
+        val allGranted = PermissionUtil.allGranted(grantResults)
+        val denied = permissions.filterIndexed { index, _ ->
+            grantResults.getOrNull(index) != PackageManager.PERMISSION_GRANTED
+        }
+        setStatus(
+            "PermissionUtil",
+            getString(R.string.util_status_permission_result, allGranted.toString(), denied.joinToString()),
+        )
     }
 
     private fun readKey(): String? {

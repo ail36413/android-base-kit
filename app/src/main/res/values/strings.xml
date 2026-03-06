@@ -136,7 +136,7 @@
     <string name="util_section_ui_device">ToastUtil + ClipboardUtil + DisplayUtil + KeyboardUtil</string>
     <string name="util_section_system_device">NetworkUtil + AppInfoUtil + IntentUtil</string>
     <string name="util_section_log">LogUtil（日志）</string>
-    <string name="util_section_extra">ViewUtil + ResourceUtil + ValidateUtil + DateTimeUtil + DateRangeUtil + FormatUtil + JsonUtil + EncodeUtil + StringUtil + NumberUtil + DecimalUtil + TemplateUtil + CollectionUtil + RegexUtil + BooleanUtil + MapUtil + UrlParamUtil + VersionUtil + MaskUtil + CaseUtil + HexUtil + ChecksumUtil + MathUtil + RandomUtil + IdUtil + RetryUtil + CacheUtil + BenchmarkUtil + FilePathUtil + FileUtil</string>
+    <string name="util_section_extra">ViewUtil + ResourceUtil + ValidateUtil + DateTimeUtil + DateRangeUtil + FormatUtil + JsonUtil + EncodeUtil + EncryptUtil + StringUtil + NumberUtil + DecimalUtil + TemplateUtil + CollectionUtil + RegexUtil + BooleanUtil + MapUtil + UrlParamUtil + VersionUtil + MaskUtil + CaseUtil + HexUtil + ChecksumUtil + MathUtil + RandomUtil + IdUtil + RetryUtil + CacheUtil + BenchmarkUtil + FilePathUtil + FileUtil</string>
     <string name="util_subsection_common">通用显示与校验</string>
     <string name="util_subsection_text">文本/编码/随机/数学</string>
     <string name="util_subsection_id_cache_perf">ID/重试/缓存/性能</string>
@@ -164,6 +164,7 @@
     <string name="util_btn_open_settings">打开应用设置页</string>
     <string name="util_btn_network">网络状态演示</string>
     <string name="util_btn_app_info">应用信息演示</string>
+    <string name="util_btn_permission_util">PermissionUtil 演示（相机/通知）</string>
     <string name="util_btn_open_browser">打开浏览器示例页</string>
     <string name="util_btn_share_text">系统分享文本</string>
     <string name="util_btn_remove_multi">批量删除 key（key,value）</string>
@@ -178,6 +179,7 @@
     <string name="util_btn_format_util">FormatUtil 演示</string>
     <string name="util_btn_json_util">JsonUtil 演示</string>
     <string name="util_btn_encode_util">EncodeUtil 演示</string>
+    <string name="util_btn_encrypt_util">EncryptUtil 演示</string>
     <string name="util_btn_file_util">FileUtil 演示</string>
     <string name="util_btn_file_util_clear">FileUtil 清理 demo 目录</string>
     <string name="util_btn_string_util">StringUtil 演示</string>
@@ -225,6 +227,9 @@
     <string name="util_status_log_done">已输出 D/I/W/E 四级日志</string>
     <string name="util_status_network">connected=%1$s, type=%2$s</string>
     <string name="util_status_app_info">pkg=%1$s, versionName=%2$s, versionCode=%3$s</string>
+    <string name="util_status_permission_granted">权限已全部授予</string>
+    <string name="util_status_permission_requesting">发起权限请求: %1$s</string>
+    <string name="util_status_permission_result">全部通过=%1$s, 拒绝=%2$s</string>
     <string name="util_status_intent_success">调用成功: %1$s</string>
     <string name="util_status_intent_failed">调用失败: %1$s</string>
     <string name="util_status_removed_multi">已删除多个 key: %1$s</string>
@@ -239,6 +244,7 @@
     <string name="util_status_format_demo">duration=%1$s, fileSize=%2$s, mask=%3$s</string>
     <string name="util_status_json_demo">json=%1$s</string>
     <string name="util_status_encode_demo">b64=%1$s, url=%2$s, b64Url=%3$s, sha256=%4$s..., invalidDecode=%5$s</string>
+    <string name="util_status_encrypt_demo">aes=%1$s..., dec=%2$s, hmac=%3$s</string>
     <string name="util_status_string_demo">trim=%1$s, ellipsize=%2$s, nullIfBlank=%3$s</string>
     <string name="util_status_number_demo">int=%1$d, double=%2$s, clamp=%3$d, round2=%4$s</string>
     <string name="util_status_collection_demo">size=%1$d, distinct=%2$s, chunks=%3$s</string>

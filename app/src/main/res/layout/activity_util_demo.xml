@@ -267,6 +267,13 @@
             android:text="@string/util_btn_app_info" />
 
         <Button
+            android:id="@+id/btn_permission_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_permission_util" />
+
+        <Button
             android:id="@+id/btn_open_browser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -385,6 +392,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/util_btn_encode_util" />
+
+        <Button
+            android:id="@+id/btn_encrypt_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_encrypt_util" />
 
         <Button
             android:id="@+id/btn_string_util_demo"

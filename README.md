@@ -1,6 +1,6 @@
 # android-base-kit
 
-Android 基础能力库集合（Kotlin + XML），当前包含独立可用的图片库与网络库，`app` 模块用于功能演示。
+Android 基础能力库集合（Kotlin + XML），当前包含独立可用的图片库、网络库与工具库，`app` 模块用于功能演示。
 
 ## 模块导航
 
@@ -8,12 +8,15 @@ Android 基础能力库集合（Kotlin + XML），当前包含独立可用的图
   - 文档：[`lib_image/README.md`](lib_image/README.md)
 - [`lib_network`](lib_network)：HTTP + WebSocket 网络能力
   - 文档：[`lib_network/README.md`](lib_network/README.md)
-- [`app`](app)：演示入口（图片与网络能力）
+- [`lib_util`](lib_util)：常用工具能力（MMKV 存储 + Timber 日志）
+  - 文档：[`lib_util/README.md`](lib_util/README.md)
+- [`app`](app)：演示入口（图片、网络、工具能力）
 
 ## 依赖入口索引
 
 - 图片库依赖与版本：[`lib_image/README.md` - 依赖说明（放在最前）](lib_image/README.md#依赖说明放在最前)
 - 网络库依赖与版本：[`lib_network/README.md` - 依赖说明（放在最前）](lib_network/README.md#依赖说明放在最前)
+- 工具库依赖与版本：[`lib_util/README.md` - 依赖说明（放在最前）](lib_util/README.md#依赖说明放在最前)
 - 统一版本目录：[`gradle/libs.versions.toml`](gradle/libs.versions.toml)
 
 ## 快速开始
@@ -36,9 +39,18 @@ dependencies {
 
 > 网络库依赖 Hilt，接入前请先阅读 [`lib_network/README.md`](lib_network/README.md) 的接入前置。
 
+### 3) 接入工具库
+
+```kotlin
+dependencies {
+    implementation(project(":lib_util"))
+}
+```
+
 ## 演示入口
 
 - 主页面：[`app/src/main/java/com/ail/android_base_kit/MainActivity.kt`](app/src/main/java/com/ail/android_base_kit/MainActivity.kt)
 - 图片 Demo：[`app/src/main/java/com/ail/android_base_kit/image/ImageDemoActivity.kt`](app/src/main/java/com/ail/android_base_kit/image/ImageDemoActivity.kt)
 - 网络 Demo：[`app/src/main/java/com/ail/android_base_kit/network/http/http/NetActivity.kt`](app/src/main/java/com/ail/android_base_kit/network/http/http/NetActivity.kt)
 - WebSocket Demo：[`app/src/main/java/com/ail/android_base_kit/network/websocket/WebSocketDemoActivity.kt`](app/src/main/java/com/ail/android_base_kit/network/websocket/WebSocketDemoActivity.kt)
+- 工具库 Demo：[`app/src/main/java/com/ail/android_base_kit/util/UtilDemoActivity.kt`](app/src/main/java/com/ail/android_base_kit/util/UtilDemoActivity.kt)

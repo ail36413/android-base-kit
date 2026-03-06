@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,21 +23,21 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/net_demo_subtitle"
-            android:textSize="13sp"
-            android:textColor="#666666" />
+            android:textColor="#666666"
+            android:textSize="13sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="@string/net_demo_endpoint_hint"
-            android:textSize="12sp"
-            android:textColor="#888888" />
+            android:textColor="#888888"
+            android:textSize="12sp" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="1dp">
 
@@ -44,188 +45,206 @@
                 android:id="@+id/tv_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="3"
                 android:padding="12dp"
                 android:text="@string/net_status"
                 android:textSize="15sp" />
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch_response_mapping"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/response_mapping_switch_off" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/response_mapping_hint"
-            android:textColor="#777777"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btn_toggle_log_level"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/net_log_level_toggle" />
-
-        <TextView
-            android:id="@+id/tv_log_level"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/net_log_level_current_auto"
-            android:textColor="#666666"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/tv_net_code_mapping"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="@string/net_code_mapping_text"
-            android:textColor="#777777"
-            android:textSize="12sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/net_section_request"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btn_get"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_get" />
-
-        <Button
-            android:id="@+id/btn_post"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_post" />
-
-        <Button
-            android:id="@+id/btn_custom_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_custom_header" />
-
-        <Button
-            android:id="@+id/btn_timeout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_timeout" />
-
-        <Button
-            android:id="@+id/btn_raw"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_raw" />
-
-        <Button
-            android:id="@+id/btn_pay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_pay" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/net_section_transfer"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btn_upload_single"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_upload_single" />
-
-        <Button
-            android:id="@+id/btn_upload_multi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_upload_multi" />
-
-        <Button
-            android:id="@+id/btn_download"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_download" />
-
-        <Button
-            android:id="@+id/btn_cancel_download"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_cancel_download" />
-
-        <Button
-            android:id="@+id/btn_hash_download"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_hash_download" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/net_section_advanced"
-            android:textStyle="bold"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btn_retry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_retry" />
-
-        <Button
-            android:id="@+id/btn_poll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_poll" />
-
-        <Button
-            android:id="@+id/btn_token_demo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_token_demo" />
-
-        <Button
-            android:id="@+id/btn_status_model"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btn_status_model" />
-
-        <ImageView
-            android:id="@+id/iv_preview"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="12dp"
-            android:contentDescription="@string/net_status"
-            android:scaleType="centerCrop" />
-
     </LinearLayout>
-</ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_response_mapping"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/response_mapping_switch_off" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/response_mapping_hint"
+                android:textColor="#777777"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_toggle_log_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/net_log_level_toggle" />
+
+            <TextView
+                android:id="@+id/tv_log_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/net_log_level_current_auto"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_net_code_mapping"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/net_code_mapping_text"
+                android:textColor="#777777"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/net_section_request"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_get"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_get" />
+
+            <Button
+                android:id="@+id/btn_post"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_post" />
+
+            <Button
+                android:id="@+id/btn_custom_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_custom_header" />
+
+            <Button
+                android:id="@+id/btn_timeout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_timeout" />
+
+            <Button
+                android:id="@+id/btn_raw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_raw" />
+
+            <Button
+                android:id="@+id/btn_pay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_pay" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/net_section_transfer"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_upload_single"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_upload_single" />
+
+            <Button
+                android:id="@+id/btn_upload_multi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_upload_multi" />
+
+            <Button
+                android:id="@+id/btn_download"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_download" />
+
+            <Button
+                android:id="@+id/btn_cancel_download"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_cancel_download" />
+
+            <Button
+                android:id="@+id/btn_hash_download"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_hash_download" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/net_section_advanced"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_retry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_retry" />
+
+            <Button
+                android:id="@+id/btn_poll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_poll" />
+
+            <Button
+                android:id="@+id/btn_token_demo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_token_demo" />
+
+            <Button
+                android:id="@+id/btn_status_model"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_status_model" />
+
+            <ImageView
+                android:id="@+id/iv_preview"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="12dp"
+                android:contentDescription="@string/net_status"
+                android:scaleType="centerCrop" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+

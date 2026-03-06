@@ -35,6 +35,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".image.ImageDemoActivity" />
+        <activity
+            android:name=".util.UtilDemoActivity"
+            android:exported="false" />
 
 
         <activity

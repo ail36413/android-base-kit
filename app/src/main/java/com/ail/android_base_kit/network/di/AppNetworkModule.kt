@@ -22,6 +22,7 @@ import com.ail.lib_network.http.util.NetworkClientFactory
 import com.ail.lib_network.websocket.annotation.WebSocketClient
 import com.ail.android_base_kit.network.http.auth.AppUnauthorizedHandler
 import com.ail.android_base_kit.network.http.http.auth.AppTokenProvider
+import com.ail.lib_util.log.LogUtil
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +30,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import timber.log.Timber
 import java.util.Optional
 
 @Module
@@ -64,10 +66,10 @@ object AppNetworkModule {
     @Singleton
     fun provideNetLogger(): INetLogger = object : INetLogger {
         override fun d(tag: String, msg: String) {
-            Log.d(tag, "[HTTP] $msg")
+            LogUtil.d(tag, msg)
         }
         override fun e(tag: String, msg: String, throwable: Throwable?) {
-            Log.e(tag, "[HTTP] $msg", throwable)
+            LogUtil.e(tag, msg, throwable)
         }
     }
 
@@ -158,10 +160,10 @@ object AppNetworkModule {
     @Singleton
     fun provideWebSocketLogger(): IWebSocketLogger = object : IWebSocketLogger {
         override fun d(tag: String, msg: String) {
-            Log.d(tag, "[WebSocket] $msg")
+            LogUtil.d(tag, msg)
         }
         override fun e(tag: String, msg: String, throwable: Throwable?) {
-            Log.e(tag, "[WebSocket] $msg", throwable)
+            LogUtil.e(tag, msg, throwable)
         }
     }
 

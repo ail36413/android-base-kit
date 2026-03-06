@@ -98,7 +98,7 @@
 
     <!-- Network demo UI strings -->
     <string name="net_demo_title">HTTP 网络库演示</string>
-    <string name="net_demo_subtitle">覆盖请求、上传下载、重试轮询、Token 刷新等常见能力</string>
+    <string name="net_demo_subtitle">覆盖请求、上传下载、重试轮询、Token 刷新等常见能力（顶部日志固定展示）</string>
     <string name="net_demo_endpoint_hint">测试地址: https://httpbin.org / https://picsum.photos</string>
     <string name="net_section_request">请求能力</string>
     <string name="net_section_transfer">上传下载</string>
@@ -125,6 +125,144 @@
     <string name="main_card_http_desc">请求/上传/下载/Token刷新/拦截器/重试</string>
     <string name="main_card_ws_title">WebSocket 库</string>
     <string name="main_card_ws_desc">心跳/重连/离线补发/多连接管理</string>
+    <string name="main_card_util_title">工具库</string>
+    <string name="main_card_util_desc">MMKV存储/Timber日志/开箱即用初始化</string>
+
+    <!-- Util demo UI strings -->
+    <string name="util_demo_title">工具库演示</string>
+    <string name="util_demo_subtitle">按工具类分组演示: Kv / Click / Thread / UI / Device / System / Log</string>
+    <string name="util_section_kv">KvUtil（存储）</string>
+    <string name="util_section_click_thread">ClickUtil + ThreadUtil</string>
+    <string name="util_section_ui_device">ToastUtil + ClipboardUtil + DisplayUtil + KeyboardUtil</string>
+    <string name="util_section_system_device">NetworkUtil + AppInfoUtil + IntentUtil</string>
+    <string name="util_section_log">LogUtil（日志）</string>
+    <string name="util_section_extra">ViewUtil + ResourceUtil + ValidateUtil + DateTimeUtil + DateRangeUtil + FormatUtil + JsonUtil + EncodeUtil + StringUtil + NumberUtil + DecimalUtil + TemplateUtil + CollectionUtil + RegexUtil + BooleanUtil + MapUtil + UrlParamUtil + VersionUtil + MaskUtil + CaseUtil + HexUtil + ChecksumUtil + MathUtil + RandomUtil + IdUtil + RetryUtil + CacheUtil + BenchmarkUtil + FilePathUtil + FileUtil</string>
+    <string name="util_subsection_common">通用显示与校验</string>
+    <string name="util_subsection_text">文本/编码/随机/数学</string>
+    <string name="util_subsection_id_cache_perf">ID/重试/缓存/性能</string>
+    <string name="util_status_default">状态</string>
+    <string name="util_key_hint">请输入 key，例如: user_name</string>
+    <string name="util_value_hint">请输入 value，例如: Ail 或 18</string>
+    <string name="util_namespace_hint">请输入命名空间，例如: user_space</string>
+    <string name="util_btn_put">保存 String</string>
+    <string name="util_btn_get">读取 String</string>
+    <string name="util_btn_put_int">保存 Int</string>
+    <string name="util_btn_get_int">读取 Int</string>
+    <string name="util_btn_namespace_put">命名空间保存 String</string>
+    <string name="util_btn_namespace_get">命名空间读取 String</string>
+    <string name="util_btn_remove">删除 key</string>
+    <string name="util_btn_clear">清空全部</string>
+    <string name="util_btn_debounce">防抖点击演示（1.2s）</string>
+    <string name="util_btn_thread">线程切换演示（IO -> Main）</string>
+    <string name="util_btn_log">日志演示</string>
+    <string name="util_btn_toast">Toast 演示</string>
+    <string name="util_btn_clipboard_copy">复制到剪贴板</string>
+    <string name="util_btn_clipboard_read">读取剪贴板</string>
+    <string name="util_btn_display">尺寸转换演示(dp/sp)</string>
+    <string name="util_btn_keyboard_show">显示键盘（聚焦value输入框）</string>
+    <string name="util_btn_keyboard_hide">隐藏键盘</string>
+    <string name="util_btn_open_settings">打开应用设置页</string>
+    <string name="util_btn_network">网络状态演示</string>
+    <string name="util_btn_app_info">应用信息演示</string>
+    <string name="util_btn_open_browser">打开浏览器示例页</string>
+    <string name="util_btn_share_text">系统分享文本</string>
+    <string name="util_btn_remove_multi">批量删除 key（key,value）</string>
+    <string name="util_btn_contains">检查 key 是否存在</string>
+    <string name="util_btn_count">查看 key 数量</string>
+    <string name="util_btn_all_keys">查看全部 key</string>
+    <string name="util_btn_open_invalid">打开非法链接（失败分支）</string>
+    <string name="util_btn_view_util">ViewUtil 演示（切换防抖按钮可见性）</string>
+    <string name="util_btn_resource_util">ResourceUtil 演示</string>
+    <string name="util_btn_validate_util">ValidateUtil 演示</string>
+    <string name="util_btn_datetime_util">DateTimeUtil 演示</string>
+    <string name="util_btn_format_util">FormatUtil 演示</string>
+    <string name="util_btn_json_util">JsonUtil 演示</string>
+    <string name="util_btn_encode_util">EncodeUtil 演示</string>
+    <string name="util_btn_file_util">FileUtil 演示</string>
+    <string name="util_btn_file_util_clear">FileUtil 清理 demo 目录</string>
+    <string name="util_btn_string_util">StringUtil 演示</string>
+    <string name="util_btn_number_util">NumberUtil 演示</string>
+    <string name="util_btn_collection_util">CollectionUtil 演示</string>
+    <string name="util_btn_regex_util">RegexUtil 演示</string>
+    <string name="util_btn_id_util">IdUtil 演示</string>
+    <string name="util_btn_retry_util">RetryUtil 演示</string>
+    <string name="util_btn_math_util">MathUtil 演示</string>
+    <string name="util_btn_random_util">RandomUtil 演示</string>
+    <string name="util_btn_cache_util">CacheUtil 演示</string>
+    <string name="util_btn_benchmark_util">BenchmarkUtil 演示</string>
+    <string name="util_btn_boolean_util">BooleanUtil 演示</string>
+    <string name="util_btn_map_util">MapUtil 演示</string>
+    <string name="util_btn_url_param_util">UrlParamUtil 演示</string>
+    <string name="util_btn_version_util">VersionUtil 演示</string>
+    <string name="util_btn_mask_util">MaskUtil 演示</string>
+    <string name="util_btn_case_util">CaseUtil 演示</string>
+    <string name="util_btn_hex_util">HexUtil 演示</string>
+    <string name="util_btn_checksum_util">ChecksumUtil 演示</string>
+    <string name="util_btn_decimal_util">DecimalUtil 演示</string>
+    <string name="util_btn_template_util">TemplateUtil 演示</string>
+    <string name="util_btn_file_path_util">FilePathUtil 演示</string>
+    <string name="util_btn_date_range_util">DateRangeUtil 演示</string>
+    <string name="util_status_key_empty">key 不能为空</string>
+    <string name="util_status_namespace_empty">命名空间不能为空</string>
+    <string name="util_status_value_invalid_int">value 不是有效 Int</string>
+    <string name="util_status_saved">已保存: %1$s = %2$s</string>
+    <string name="util_status_read">读取结果: %1$s = %2$s</string>
+    <string name="util_status_saved_int">已保存Int: %1$s = %2$d</string>
+    <string name="util_status_read_int">读取Int: %1$s = %2$d</string>
+    <string name="util_status_namespace_saved">已保存[%1$s]: %2$s = %3$s</string>
+    <string name="util_status_namespace_read">读取[%1$s]: %2$s = %3$s</string>
+    <string name="util_status_removed">已删除 key: %1$s</string>
+    <string name="util_status_cleared">已清空默认命名空间数据</string>
+    <string name="util_status_debounce_pass">点击生效（1.2秒内重复点击会被拦截）</string>
+    <string name="util_status_thread_running">子线程执行中...</string>
+    <string name="util_status_thread_done">线程切换完成: %1$s</string>
+    <string name="util_status_toast_done">已弹出 Toast</string>
+    <string name="util_status_clipboard_copied">已复制到剪贴板: %1$s</string>
+    <string name="util_status_clipboard_read">剪贴板内容: %1$s</string>
+    <string name="util_status_display_result">16dp=%1$dpx, 14sp=%2$dpx, 100px=%3$ddp</string>
+    <string name="util_status_keyboard_show">已请求显示键盘</string>
+    <string name="util_status_keyboard_hide">已请求隐藏键盘</string>
+    <string name="util_status_log_done">已输出 D/I/W/E 四级日志</string>
+    <string name="util_status_network">connected=%1$s, type=%2$s</string>
+    <string name="util_status_app_info">pkg=%1$s, versionName=%2$s, versionCode=%3$s</string>
+    <string name="util_status_intent_success">调用成功: %1$s</string>
+    <string name="util_status_intent_failed">调用失败: %1$s</string>
+    <string name="util_status_removed_multi">已删除多个 key: %1$s</string>
+    <string name="util_status_contains">contains(%1$s) = %2$s</string>
+    <string name="util_status_count">当前 key 数量: %1$d</string>
+    <string name="util_status_all_keys">全部 key: %1$s</string>
+    <string name="util_status_view_visible">目标按钮已显示</string>
+    <string name="util_status_view_gone">目标按钮已隐藏</string>
+    <string name="util_status_resource_demo">appName=%1$s, textColor=%2$s</string>
+    <string name="util_status_validate_demo">email=%1$s, url=%2$s, mobileCN=%3$s</string>
+    <string name="util_status_datetime_demo">now=%1$s, isToday=%2$s</string>
+    <string name="util_status_format_demo">duration=%1$s, fileSize=%2$s, mask=%3$s</string>
+    <string name="util_status_json_demo">json=%1$s</string>
+    <string name="util_status_encode_demo">b64=%1$s, url=%2$s, b64Url=%3$s, sha256=%4$s..., invalidDecode=%5$s</string>
+    <string name="util_status_string_demo">trim=%1$s, ellipsize=%2$s, nullIfBlank=%3$s</string>
+    <string name="util_status_number_demo">int=%1$d, double=%2$s, clamp=%3$d, round2=%4$s</string>
+    <string name="util_status_collection_demo">size=%1$d, distinct=%2$s, chunks=%3$s</string>
+    <string name="util_status_regex_demo">first=%1$s, all=%2$s, replace=%3$s</string>
+    <string name="util_status_id_demo">uuid=%1$s..., short=%2$s, timeId=%3$s</string>
+    <string name="util_status_retry_util_demo">failCount=%1$d, result=%2$s</string>
+    <string name="util_status_random_demo">int=%1$d, bool=%2$s, random=%3$s</string>
+    <string name="util_status_math_demo">gcd=%1$d, lcm=%2$d, percent=%3$s%%</string>
+    <string name="util_status_cache_demo">key=%1$s, value=%2$s, size=%3$d</string>
+    <string name="util_status_benchmark_demo">sum=%1$d, costMs=%2$d</string>
+    <string name="util_status_boolean_demo">value=%1$s, int=%2$d</string>
+    <string name="util_status_map_demo">lang=%1$s, size=%2$d, merged=%3$s</string>
+    <string name="util_status_url_param_demo">url=%1$s, params=%2$s</string>
+    <string name="util_status_version_demo">compare=%1$d, atLeast=%2$s, current=%3$s, target=%4$s</string>
+    <string name="util_status_mask_demo">phone=%1$s, email=%2$s</string>
+    <string name="util_status_case_demo">snake=%1$s, camel=%2$s</string>
+    <string name="util_status_hex_demo">hex=%1$s, decoded=%2$s</string>
+    <string name="util_status_checksum_demo">crc32=%1$s, adler32=%2$s</string>
+    <string name="util_status_decimal_demo">add=%1$s, divide=%2$s</string>
+    <string name="util_status_template_demo">keys=%1$s, text=%2$s</string>
+    <string name="util_status_file_path_demo">name=%1$s, ext=%2$s, parent=%3$s</string>
+    <string name="util_status_date_range_demo">start=%1$s, end=%2$s, inToday=%3$s</string>
+    <string name="util_status_file_demo">write=%1$s, read=%2$s, size=%3$s</string>
+    <string name="util_status_file_clear_demo">clearDir=%1$s</string>
 
     <!-- NetActivity full status texts -->
     <string name="status_default">状态</string>
@@ -200,3 +338,4 @@
     <string name="ws_log_default_connect_start">[默认连接] 开始连接：%1$s</string>
 
 </resources>
+

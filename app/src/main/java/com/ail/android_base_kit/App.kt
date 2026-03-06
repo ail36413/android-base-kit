@@ -3,9 +3,12 @@ package com.ail.android_base_kit
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.os.Handler
 import android.os.Looper
 import com.ail.android_base_kit.network.http.LoginActivity
+import com.ail.lib_util.UtilConfig
+import com.ail.lib_util.UtilKit
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
@@ -27,6 +30,15 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        UtilKit.init(
+            context = this,
+            config = UtilConfig(
+                enableTimber = true,
+                debugLog = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0,
+                tagPrefix = "BaseKit"
+            )
+        )
 
         // register callbacks to track activities
         registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {

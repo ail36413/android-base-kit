@@ -52,5 +52,6 @@ dependencies {
 
     implementation(project(":lib_image"))
     implementation(project(":lib_network"))
+    implementation(project(":lib_util"))
 
 }

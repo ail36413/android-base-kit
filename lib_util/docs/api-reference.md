@@ -54,19 +54,34 @@
 - `normalizeSeparator`：统一斜杠分隔符。
 - `isAbsolute`：是否绝对路径。
 
+### `UriFileUtil`
+- `fileName(uri|uriString)`：从 `content://` 或 `file://` 获取文件名。
+- `mimeType(uri|uriString)`：获取 MIME 类型。
+- `size(uri|uriString)`：获取大小（字节）。
+
 ### `CacheUtil`
 - `put`：写入内存缓存（支持 ttl）。
 - `get`：按泛型读取缓存。
 - `remove`：移除缓存。
 - `contains`：是否存在且未过期。
 - `size`：当前缓存数量。
-- `clear`：清空缓存。
+- `clear`：清空缓存（Demo 对应 `btn_cache_clear_demo`）。
 
 ## Log / Click / Thread
 
 ### `LogUtil`
 - `d/i/w/e(message)`：默认 Tag 日志。
 - `d/i/w/e(tag, message)`：自定义 Tag 日志。
+
+### `CrashUtil`
+- `isInstalled`：是否已安装全局崩溃处理器。
+- `install(config, onCrash)`：安装全局崩溃捕获。
+- `uninstall`：卸载并恢复之前处理器。
+- `recordHandled`：手动记录一个已捕获异常（不杀进程）。
+- `crashDir`：崩溃日志目录。
+- `listCrashFiles`：按时间倒序列出崩溃日志文件。
+- `readCrash`：读取指定崩溃日志内容。
+- `clear`：清空崩溃日志目录。
 
 ### `ClickUtil`
 - `isFastClick`：按 key + 时间窗判断是否快速重复点击。
@@ -83,8 +98,8 @@
 - `shutdown`：关闭线程池（可选清空主线程队列）。
 
 ### `RetryUtil`
-- `Config`：重试策略（次数/初始间隔/退避系数/最大间隔）。
-- `retry`：执行重试，最终失败抛异常。
+- `Config`：重试策略（次数/初始间隔/退避系数/最大间隔/`shouldRetry` 条件）。
+- `retry`：执行重试，最终失败抛异常；遇到 `InterruptedException` 会立即中断并透传。
 - `retryOrNull`：执行重试，最终失败返回 null。
 
 ## Device / Intent / Network / Permission
@@ -116,6 +131,12 @@
 - `isMetered`：是否计费网络。
 - `networkType`：当前网络类型枚举。
 
+### `NetStateListenerUtil`
+- 前置条件：需要 `android.permission.ACCESS_NETWORK_STATE`（库清单已声明）。
+- `register(listener)`：注册网络变化监听，返回 token；失败返回空串。
+- `unregister(token)`：按 token 取消单个监听，空 token 忽略。
+- `unregisterAll`：取消当前进程内全部已注册监听。
+
 ### `PermissionUtil`
 - `isGranted`：单权限是否已授权。
 - `areGranted`：多权限是否全部授权。
@@ -135,6 +156,16 @@
 - `dp2px/px2dp`：dp 与 px 换算。
 - `sp2px/px2sp`：sp 与 px 换算。
 - `dpToPx/pxToDp/spToPx/pxToSp`：语义化别名。
+
+### `ScreenUtil`
+- `screenWidthPx/screenHeightPx`：获取屏幕宽高（px）。
+- `densityDpi`：获取屏幕密度 DPI。
+- `isLandscape/isPortrait`：判断当前方向。
+- `systemBarInsets(view)`：读取当前窗口系统栏 Insets（优先实时值）。
+- `availableContentWidthPx/availableContentHeightPx`：可用内容区宽高（优先 Insets，失败回退资源维度估算）。
+- `statusBarHeight`：状态栏高度（px）。
+- `navigationBarHeight`：导航栏高度（px，无导航栏时为 0）。
+- `hasNavigationBar`：是否存在导航栏（资源维度推断）。
 
 ### `KeyboardUtil`
 - `show(view)`：请求显示软键盘。
@@ -201,6 +232,35 @@
 - `filterNotNullValues`：过滤空值项。
 - `toMutable`：转可变副本。
 
+### `TemplateUtil`
+- `render`：按 `%{key}` 占位语法渲染模板，缺失 key 替换为空串。
+- `keys`：提取模板中全部占位 key（去重）。
+
+### `UrlParamUtil`
+- `build`：将参数 map 追加到 URL/query（自动处理 `#fragment` 与末尾 `?`/`&`）。
+- `parse`：将 URL 或 query 字符串解析为键值对。
+- `append`：便捷追加单个 query 参数。
+
+### `VersionUtil`
+- `compare`：按数字段逐位比较版本号。
+- `isAtLeast`：判断当前版本是否满足最小目标版本。
+
+### `MaskUtil`
+- `maskPhone`：手机号脱敏（前 3 后 4）。
+- `maskEmail`：邮箱脱敏（用户名仅保留首字符）。
+- `maskIdCard`：证件号按前后保留位数脱敏。
+
+### `CaseUtil`
+- `camelToSnake`：驼峰转下划线。
+- `snakeToCamel`：下划线转小驼峰。
+- `capitalizeFirst`：首字母大写。
+- `decapitalizeFirst`：首字母小写。
+
+### `DecimalUtil`
+- `add/subtract/multiply`：基于 BigDecimal 的精确运算并按 scale 输出。
+- `divide`：精确除法，除数为 0 返回 `"0"`。
+- `compare`：比较两个数值大小。
+
 ### `BooleanUtil`
 - `parse`：文本转布尔（支持兜底）。
 - `toggle`：布尔取反。
@@ -248,7 +308,8 @@
 ### `DateTimeUtil`
 - `nowMillis`：当前时间戳。
 - `format`：时间戳格式化。
-- `parse`：文本解析为时间戳。
+- `parse`：宽松解析文本为时间戳。
+- `parseStrict`：严格解析文本为时间戳（非法日期返回 null）。
 - `isToday`：是否今天。
 
 ### `DateRangeUtil`

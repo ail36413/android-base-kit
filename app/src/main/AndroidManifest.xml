@@ -34,18 +34,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".image.ImageDemoActivity" />
+
+        <activity
+            android:name=".image.ImageDemoActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".util.UtilDemoCategoryActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".util.UtilDemoActivity"
-            android:exported="false" />
-
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".network.websocket.WebSocketDemoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".network.http.http.NetActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
         <service android:name=".network.websocket.WebSocketService"
             android:foregroundServiceType="dataSync"
@@ -55,7 +67,8 @@
         <!-- Demo login activity used by global 401 handler -->
         <activity
             android:name=".network.http.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
     </application>
 

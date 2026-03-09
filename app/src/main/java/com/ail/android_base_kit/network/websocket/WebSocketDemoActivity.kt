@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ail.lib_network.websocket.IWebSocketManager
 import com.ail.lib_network.websocket.WebSocketManager
 import com.ail.android_base_kit.R
+import com.ail.android_base_kit.ui.bindToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -39,6 +40,8 @@ class WebSocketDemoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_websocket_demo)
+
+        bindToolbar(R.id.toolbar_ws)
 
         tvLog = findViewById(R.id.tv_ws_log)
         etMessage = findViewById(R.id.et_ws_message)
@@ -207,5 +210,10 @@ class WebSocketDemoActivity : AppCompatActivity() {
             }
         )
         appendLogRes(R.string.ws_log_default_connect_start, defaultUrl)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

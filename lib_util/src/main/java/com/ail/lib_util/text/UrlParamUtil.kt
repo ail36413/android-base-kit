@@ -19,8 +19,17 @@ object UrlParamUtil {
         val query = params.entries.joinToString("&") { (key, value) ->
             "${encode(key)}=${encode(value?.toString().orEmpty())}"
         }
-        val separator = if (baseUrl.contains("?")) "&" else "?"
-        return baseUrl + separator + query
+
+        val noFragmentUrl = baseUrl.substringBefore('#')
+        val fragment = baseUrl.substringAfter('#', "")
+        val separator = when {
+            noFragmentUrl.contains("?") -> {
+                if (noFragmentUrl.endsWith("?") || noFragmentUrl.endsWith("&")) "" else "&"
+            }
+            else -> "?"
+        }
+        val merged = noFragmentUrl + separator + query
+        return if (fragment.isNotEmpty()) "$merged#$fragment" else merged
     }
 
     /**

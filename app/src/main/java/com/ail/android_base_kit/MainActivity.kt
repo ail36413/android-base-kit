@@ -9,8 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ail.android_base_kit.image.ImageDemoActivity
 import com.ail.android_base_kit.network.http.http.NetActivity
-import com.ail.android_base_kit.util.UtilDemoActivity
-import timber.log.Timber
+import com.ail.android_base_kit.util.UtilDemoCategoryActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, com.ail.android_base_kit.network.websocket.WebSocketDemoActivity::class.java))
         }
         findViewById<CardView>(R.id.cardUtil).setOnClickListener {
-            startActivity(Intent(this, UtilDemoActivity::class.java))
+            startActivity(Intent(this, UtilDemoCategoryActivity::class.java))
         }
     }
 }

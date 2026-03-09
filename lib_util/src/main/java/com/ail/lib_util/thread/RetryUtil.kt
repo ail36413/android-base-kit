@@ -13,6 +13,8 @@ object RetryUtil {
         val backoffFactor: Double = 1.0,
         /** 单次等待上限（毫秒）。 */
         val maxDelayMs: Long = 5_000L,
+        /** 自定义是否继续重试，attempt 从 1 开始。 */
+        val shouldRetry: (Throwable, Int) -> Boolean = { _, _ -> true },
     ) {
         init {
             require(maxAttempts >= 1) { "maxAttempts must be >= 1" }
@@ -35,8 +37,15 @@ object RetryUtil {
             try {
                 return block(attempt)
             } catch (t: Throwable) {
+                if (t is InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    throw t
+                }
                 lastError = t
                 if (attempt == config.maxAttempts) break
+                if (!config.shouldRetry(t, attempt)) {
+                    throw t
+                }
                 sleepSafely(currentDelay.coerceAtMost(config.maxDelayMs))
                 currentDelay = nextDelay(currentDelay, config)
             }
@@ -58,6 +67,11 @@ object RetryUtil {
 
     private fun sleepSafely(delayMs: Long) {
         if (delayMs <= 0L) return
-        runCatching { Thread.sleep(delayMs) }
+        try {
+            Thread.sleep(delayMs)
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            throw e
+        }
     }
 }

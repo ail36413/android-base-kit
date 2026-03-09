@@ -1,16 +1,20 @@
 package com.ail.android_base_kit.network.http
 
-import android.app.Activity
 import android.os.Bundle
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.ail.android_base_kit.R
+import com.ail.android_base_kit.ui.bindToolbar
 
-class LoginActivity : Activity() {
+class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // simple placeholder UI
-        val tv = TextView(this)
-        tv.text = "Login Screen (demo)"
-        tv.textSize = 20f
-        setContentView(tv)
+        setContentView(R.layout.activity_login)
+
+        bindToolbar(R.id.toolbar_login)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

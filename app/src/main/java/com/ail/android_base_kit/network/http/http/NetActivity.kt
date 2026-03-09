@@ -51,6 +51,7 @@ import com.ail.android_base_kit.network.http.model.User
 import kotlinx.coroutines.Job
 import java.io.IOException
 import androidx.annotation.StringRes
+import com.ail.android_base_kit.ui.bindToolbar
 
 @AndroidEntryPoint
 class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
@@ -122,6 +123,8 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_net)
 
+        bindToolbar(R.id.toolbar_net)
+
         tvStatus = findViewById(R.id.tv_status)
         btnGet = findViewById(R.id.btn_get)
         btnPost = findViewById(R.id.btn_post)
@@ -185,7 +188,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun doGet() {
-        setStatusText(R.string.status_default)
+        setStatusText(R.string.get_success)
         launch(Dispatchers.IO) {
             val result = networkExecutor.executeRequest {
                 userService.checkStatus(1)
@@ -196,7 +199,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         setStatus(R.string.get_success, data?.size ?: 0)
                     }
                     .onTechnicalFailure { e ->
-                        setStatus(R.string.get_tech_fail, e.message ?: "")
+                        setStatus(R.string.get_tech_fail, e.message)
                     }
                     .onBusinessFailure { code, msg ->
                         setStatus(R.string.get_business_fail, code, msg)
@@ -214,7 +217,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { setStatus(R.string.post_success_fmt, it?.toString() ?: "") }
-                    .onTechnicalFailure { setStatus(R.string.post_error_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.post_error_fmt, it.message) }
                     .onBusinessFailure { code, msg -> setStatus(R.string.post_business_fail_fmt, code, msg) }
             }
         }
@@ -236,7 +239,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             launch(Dispatchers.Main) {
                 result.onSuccess { setStatusText(R.string.upload_success) }
-                    .onTechnicalFailure { setStatus(R.string.upload_error_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.upload_error_fmt, it.message) }
             }
         }
     }
@@ -259,7 +262,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
             launch(Dispatchers.Main) {
                 result.onSuccess { setStatusText(R.string.upload_multi_success) }
-                    .onTechnicalFailure { setStatus(R.string.upload_multi_error_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.upload_multi_error_fmt, it.message) }
             }
         }
     }
@@ -273,7 +276,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { setStatus(R.string.custom_header_success_fmt, it?.toString() ?: "") }
-                    .onTechnicalFailure { setStatus(R.string.custom_header_tech_fail_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.custom_header_tech_fail_fmt, it.message) }
                     .onBusinessFailure { code, msg -> setStatus(R.string.custom_header_business_fail_fmt, code, msg) }
             }
         }
@@ -288,7 +291,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { setStatus(R.string.timeout_success_fmt, it?.toString() ?: "") }
-                    .onTechnicalFailure { setStatus(R.string.timeout_tech_fail_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.timeout_tech_fail_fmt, it.message) }
                     .onBusinessFailure { code, msg -> setStatus(R.string.timeout_business_fail_fmt, code, msg) }
             }
         }
@@ -301,7 +304,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { setStatus(R.string.pay_success_fmt, it ?: "") }
-                    .onTechnicalFailure { setStatus(R.string.pay_tech_fail_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.pay_tech_fail_fmt, it.message) }
                     .onBusinessFailure { code, msg -> setStatus(R.string.pay_business_fail_fmt, code, msg) }
             }
         }
@@ -320,7 +323,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         setStatus(R.string.raw_success_size, size)
                         result.data?.close()
                     }
-                    is NetworkResult.TechnicalFailure -> setStatus(R.string.raw_tech_fmt, result.exception.message ?: "")
+                    is NetworkResult.TechnicalFailure -> setStatus(R.string.raw_tech_fmt, result.exception.message)
                     is NetworkResult.BusinessFailure -> setStatus(R.string.raw_business_msg_fmt, result.code, result.msg)
                 }
             }
@@ -361,7 +364,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         if (e.code == NetCode.Tech.REQUEST_CANCELED) {
                             setStatusText(R.string.download_cancelled)
                         } else {
-                            setStatus(R.string.download_fail, e.message ?: "")
+                            setStatus(R.string.download_fail, e.message)
                         }
                     }
                     .onBusinessFailure { code, msg ->
@@ -395,7 +398,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { file -> setStatus(R.string.hash_download_success, file?.absolutePath ?: "") }
-                    .onTechnicalFailure { e -> setStatus(R.string.hash_download_fail_fmt, e.message ?: "") }
+                    .onTechnicalFailure { e -> setStatus(R.string.hash_download_fail_fmt, e.message) }
             }
         }
     }
@@ -413,7 +416,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 launch(Dispatchers.Main) {
                     response
                         .onSuccess { setStatus(R.string.retry_success_fmt, it?.toString() ?: "") }
-                        .onTechnicalFailure { setStatus(R.string.retry_tech_fail_fmt, it.message ?: "") }
+                        .onTechnicalFailure { setStatus(R.string.retry_tech_fail_fmt, it.message) }
                         .onBusinessFailure { code, msg -> setStatus(R.string.retry_business_fail_fmt, code, msg) }
                 }
             } catch (t: Throwable) {
@@ -438,7 +441,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 launch(Dispatchers.Main) {
                     when (item) {
                         is NetworkResult.Success<*> -> setStatus(R.string.poll_success, item.data?.toString() ?: "")
-                        is NetworkResult.TechnicalFailure -> setStatus(R.string.poll_tech_fmt, item.exception.message ?: "")
+                        is NetworkResult.TechnicalFailure -> setStatus(R.string.poll_tech_fmt, item.exception.message)
                         is NetworkResult.BusinessFailure -> setStatus(R.string.poll_business_with_msg_fmt, item.code, item.msg)
                     }
                 }
@@ -470,7 +473,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     // 这里用 networkExecutor.executeRequest 去调用可能返回 NetworkResult 的接口
                     networkExecutor.executeRequest<String> { payApi.getPayStatus() }
                 }
-            } catch (t: Throwable) {
+            } catch (_: Throwable) {
                 null
             }
 
@@ -478,7 +481,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 when (result) {
                     is NetworkResult.Success -> setStatus(R.string.token_demo_success, result.data ?: "", provider.getAccessToken() ?: "")
                     is NetworkResult.BusinessFailure -> setStatus(R.string.token_demo_business_fail, result.code, result.msg, provider.getAccessToken() ?: "")
-                    is NetworkResult.TechnicalFailure -> setStatus(R.string.token_demo_tech_fail, result.exception.message ?: "", provider.getAccessToken() ?: "")
+                    is NetworkResult.TechnicalFailure -> setStatus(R.string.token_demo_tech_fail, result.exception.message, provider.getAccessToken() ?: "")
                     else -> setStatus(R.string.token_demo_error, provider.getAccessToken() ?: "")
                 }
             }
@@ -501,7 +504,7 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 result
                     .onSuccess { setStatus(R.string.status_model_success_fmt, it?.toString() ?: "") }
-                    .onTechnicalFailure { setStatus(R.string.status_model_tech_fail_fmt, it.message ?: "") }
+                    .onTechnicalFailure { setStatus(R.string.status_model_tech_fail_fmt, it.message) }
                     .onBusinessFailure { code, msg -> setStatus(R.string.status_model_business_fail_fmt, code, msg) }
             }
         }
@@ -594,6 +597,11 @@ class NetActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             NetCode.Tech.UNKNOWN,
             NetCode.Tech.PARSE_ERROR
         )
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     override fun onDestroy() {

@@ -3,28 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/surface"
     android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_net"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="@string/net_demo_title"
+        app:titleTextColor="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/primary_soft"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/net_demo_title"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <!-- 顶部标题交由 Toolbar 展示，这里保留说明信息 -->
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/net_demo_subtitle"
-            android:textColor="#666666"
-            android:textSize="13sp" />
+            style="@style/AppDemoSubtitleText"
+            android:text="@string/net_demo_subtitle" />
 
         <TextView
             android:layout_width="match_parent"
@@ -38,8 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/status_bg"
             app:cardCornerRadius="10dp"
-            app:cardElevation="1dp">
+            app:cardElevation="0dp">
 
             <TextView
                 android:id="@+id/tv_status"
@@ -48,6 +52,7 @@
                 android:maxLines="3"
                 android:padding="12dp"
                 android:text="@string/net_status"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp" />
 
         </androidx.cardview.widget.CardView>
@@ -64,7 +69,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="16dp"
+            android:theme="@style/AppDemoControlsThemeOverlay">
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_response_mapping"
@@ -110,9 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/net_section_request"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                style="@style/AppDemoSectionTitleText"
+                android:text="@string/net_section_request" />
 
             <Button
                 android:id="@+id/btn_get"
@@ -160,9 +165,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/net_section_transfer"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                style="@style/AppDemoSectionTitleText"
+                android:text="@string/net_section_transfer" />
 
             <Button
                 android:id="@+id/btn_upload_single"
@@ -203,9 +207,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/net_section_advanced"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                style="@style/AppDemoSectionTitleText"
+                android:text="@string/net_section_advanced" />
 
             <Button
                 android:id="@+id/btn_retry"
@@ -247,4 +250,3 @@
     </ScrollView>
 
 </LinearLayout>
-

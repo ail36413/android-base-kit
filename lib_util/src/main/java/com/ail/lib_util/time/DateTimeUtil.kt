@@ -38,9 +38,32 @@ object DateTimeUtil {
         pattern: String = "yyyy-MM-dd HH:mm:ss",
         locale: Locale = Locale.getDefault(),
     ): Long? {
+        return parseInternal(text, pattern, locale, lenient = true)
+    }
+
+    /**
+     * 严格解析时间文本为时间戳。
+     *
+     * 与 [parse] 的区别是会关闭宽松解析，非法日期会直接返回 null。
+     */
+    fun parseStrict(
+        text: String,
+        pattern: String = "yyyy-MM-dd HH:mm:ss",
+        locale: Locale = Locale.getDefault(),
+    ): Long? {
+        return parseInternal(text, pattern, locale, lenient = false)
+    }
+
+    private fun parseInternal(
+        text: String,
+        pattern: String,
+        locale: Locale,
+        lenient: Boolean,
+    ): Long? {
         if (text.isBlank()) return null
         return runCatching {
             val sdf = SimpleDateFormat(pattern, locale)
+            sdf.isLenient = lenient
             sdf.parse(text)?.time
         }.getOrNull()
     }

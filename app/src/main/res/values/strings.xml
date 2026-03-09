@@ -132,14 +132,25 @@
     <string name="util_demo_title">工具库演示</string>
     <string name="util_demo_subtitle">按工具类分组演示: Kv / Click / Thread / UI / Device / System / Log</string>
     <string name="util_section_kv">KvUtil（存储）</string>
+    <string name="util_section_kv_desc">字符串/数字读写、命名空间与 key 管理</string>
     <string name="util_section_click_thread">ClickUtil + ThreadUtil</string>
+    <string name="util_section_click_thread_desc">点击防抖与线程切换的常用能力</string>
     <string name="util_section_ui_device">ToastUtil + ClipboardUtil + DisplayUtil + KeyboardUtil</string>
+    <string name="util_section_ui_device_desc">常见 UI 反馈与设备交互能力</string>
     <string name="util_section_system_device">NetworkUtil + AppInfoUtil + IntentUtil</string>
-    <string name="util_section_log">LogUtil（日志）</string>
-    <string name="util_section_extra">ViewUtil + ResourceUtil + ValidateUtil + DateTimeUtil + DateRangeUtil + FormatUtil + JsonUtil + EncodeUtil + EncryptUtil + StringUtil + NumberUtil + DecimalUtil + TemplateUtil + CollectionUtil + RegexUtil + BooleanUtil + MapUtil + UrlParamUtil + VersionUtil + MaskUtil + CaseUtil + HexUtil + ChecksumUtil + MathUtil + RandomUtil + IdUtil + RetryUtil + CacheUtil + BenchmarkUtil + FilePathUtil + FileUtil</string>
+    <string name="util_section_system_device_desc">网络、应用信息、权限与系统跳转</string>
+    <string name="util_section_log">LogUtil + CrashUtil（日志）</string>
+    <string name="util_section_log_desc">日志输出与崩溃记录示例</string>
+    <string name="util_section_extra">扩展工具集</string>
+    <string name="util_section_extra_desc">高频工具按场景拆分为三组，便于快速定位</string>
+    <string name="util_section_status_input">状态与输入</string>
+    <string name="util_section_status_input_desc">先填 key/value/namespace，再点击下方按钮演示</string>
     <string name="util_subsection_common">通用显示与校验</string>
+    <string name="util_subsection_common_desc">View/Resource/Validate/DateTime/Format 常见能力</string>
     <string name="util_subsection_text">文本/编码/随机/数学</string>
+    <string name="util_subsection_text_desc">Json/Encode/Regex/Map/Mask/Hex/Math 等常用工具</string>
     <string name="util_subsection_id_cache_perf">ID/重试/缓存/性能</string>
+    <string name="util_subsection_id_cache_perf_desc">Id/Retry/Cache/Benchmark/File 系列工具</string>
     <string name="util_status_default">状态</string>
     <string name="util_key_hint">请输入 key，例如: user_name</string>
     <string name="util_value_hint">请输入 value，例如: Ail 或 18</string>
@@ -155,6 +166,7 @@
     <string name="util_btn_debounce">防抖点击演示（1.2s）</string>
     <string name="util_btn_thread">线程切换演示（IO -> Main）</string>
     <string name="util_btn_log">日志演示</string>
+    <string name="util_btn_crash_util">CrashUtil 演示（写入异常日志）</string>
     <string name="util_btn_toast">Toast 演示</string>
     <string name="util_btn_clipboard_copy">复制到剪贴板</string>
     <string name="util_btn_clipboard_read">读取剪贴板</string>
@@ -163,6 +175,7 @@
     <string name="util_btn_keyboard_hide">隐藏键盘</string>
     <string name="util_btn_open_settings">打开应用设置页</string>
     <string name="util_btn_network">网络状态演示</string>
+    <string name="util_btn_net_state_listener">网络变化监听（开始/停止）</string>
     <string name="util_btn_app_info">应用信息演示</string>
     <string name="util_btn_permission_util">PermissionUtil 演示（相机/通知）</string>
     <string name="util_btn_open_browser">打开浏览器示例页</string>
@@ -181,6 +194,7 @@
     <string name="util_btn_encode_util">EncodeUtil 演示</string>
     <string name="util_btn_encrypt_util">EncryptUtil 演示</string>
     <string name="util_btn_file_util">FileUtil 演示</string>
+    <string name="util_btn_uri_file_util">UriFileUtil 演示</string>
     <string name="util_btn_file_util_clear">FileUtil 清理 demo 目录</string>
     <string name="util_btn_string_util">StringUtil 演示</string>
     <string name="util_btn_number_util">NumberUtil 演示</string>
@@ -191,157 +205,16 @@
     <string name="util_btn_math_util">MathUtil 演示</string>
     <string name="util_btn_random_util">RandomUtil 演示</string>
     <string name="util_btn_cache_util">CacheUtil 演示</string>
-    <string name="util_btn_benchmark_util">BenchmarkUtil 演示</string>
-    <string name="util_btn_boolean_util">BooleanUtil 演示</string>
-    <string name="util_btn_map_util">MapUtil 演示</string>
-    <string name="util_btn_url_param_util">UrlParamUtil 演示</string>
-    <string name="util_btn_version_util">VersionUtil 演示</string>
-    <string name="util_btn_mask_util">MaskUtil 演示</string>
-    <string name="util_btn_case_util">CaseUtil 演示</string>
-    <string name="util_btn_hex_util">HexUtil 演示</string>
-    <string name="util_btn_checksum_util">ChecksumUtil 演示</string>
-    <string name="util_btn_decimal_util">DecimalUtil 演示</string>
-    <string name="util_btn_template_util">TemplateUtil 演示</string>
-    <string name="util_btn_file_path_util">FilePathUtil 演示</string>
-    <string name="util_btn_date_range_util">DateRangeUtil 演示</string>
-    <string name="util_status_key_empty">key 不能为空</string>
-    <string name="util_status_namespace_empty">命名空间不能为空</string>
-    <string name="util_status_value_invalid_int">value 不是有效 Int</string>
-    <string name="util_status_saved">已保存: %1$s = %2$s</string>
-    <string name="util_status_read">读取结果: %1$s = %2$s</string>
-    <string name="util_status_saved_int">已保存Int: %1$s = %2$d</string>
-    <string name="util_status_read_int">读取Int: %1$s = %2$d</string>
-    <string name="util_status_namespace_saved">已保存[%1$s]: %2$s = %3$s</string>
-    <string name="util_status_namespace_read">读取[%1$s]: %2$s = %3$s</string>
-    <string name="util_status_removed">已删除 key: %1$s</string>
-    <string name="util_status_cleared">已清空默认命名空间数据</string>
-    <string name="util_status_debounce_pass">点击生效（1.2秒内重复点击会被拦截）</string>
-    <string name="util_status_thread_running">子线程执行中...</string>
-    <string name="util_status_thread_done">线程切换完成: %1$s</string>
-    <string name="util_status_toast_done">已弹出 Toast</string>
-    <string name="util_status_clipboard_copied">已复制到剪贴板: %1$s</string>
-    <string name="util_status_clipboard_read">剪贴板内容: %1$s</string>
-    <string name="util_status_display_result">16dp=%1$dpx, 14sp=%2$dpx, 100px=%3$ddp</string>
-    <string name="util_status_keyboard_show">已请求显示键盘</string>
-    <string name="util_status_keyboard_hide">已请求隐藏键盘</string>
-    <string name="util_status_log_done">已输出 D/I/W/E 四级日志</string>
-    <string name="util_status_network">connected=%1$s, type=%2$s</string>
-    <string name="util_status_app_info">pkg=%1$s, versionName=%2$s, versionCode=%3$s</string>
-    <string name="util_status_permission_granted">权限已全部授予</string>
-    <string name="util_status_permission_requesting">发起权限请求: %1$s</string>
-    <string name="util_status_permission_result">全部通过=%1$s, 拒绝=%2$s</string>
-    <string name="util_status_intent_success">调用成功: %1$s</string>
-    <string name="util_status_intent_failed">调用失败: %1$s</string>
-    <string name="util_status_removed_multi">已删除多个 key: %1$s</string>
-    <string name="util_status_contains">contains(%1$s) = %2$s</string>
-    <string name="util_status_count">当前 key 数量: %1$d</string>
-    <string name="util_status_all_keys">全部 key: %1$s</string>
-    <string name="util_status_view_visible">目标按钮已显示</string>
-    <string name="util_status_view_gone">目标按钮已隐藏</string>
-    <string name="util_status_resource_demo">appName=%1$s, textColor=%2$s</string>
-    <string name="util_status_validate_demo">email=%1$s, url=%2$s, mobileCN=%3$s</string>
-    <string name="util_status_datetime_demo">now=%1$s, isToday=%2$s</string>
-    <string name="util_status_format_demo">duration=%1$s, fileSize=%2$s, mask=%3$s</string>
-    <string name="util_status_json_demo">json=%1$s</string>
-    <string name="util_status_encode_demo">b64=%1$s, url=%2$s, b64Url=%3$s, sha256=%4$s..., invalidDecode=%5$s</string>
-    <string name="util_status_encrypt_demo">aes=%1$s..., dec=%2$s, hmac=%3$s</string>
-    <string name="util_status_string_demo">trim=%1$s, ellipsize=%2$s, nullIfBlank=%3$s</string>
-    <string name="util_status_number_demo">int=%1$d, double=%2$s, clamp=%3$d, round2=%4$s</string>
-    <string name="util_status_collection_demo">size=%1$d, distinct=%2$s, chunks=%3$s</string>
-    <string name="util_status_regex_demo">first=%1$s, all=%2$s, replace=%3$s</string>
-    <string name="util_status_id_demo">uuid=%1$s..., short=%2$s, timeId=%3$s</string>
-    <string name="util_status_retry_util_demo">failCount=%1$d, result=%2$s</string>
-    <string name="util_status_random_demo">int=%1$d, bool=%2$s, random=%3$s</string>
-    <string name="util_status_math_demo">gcd=%1$d, lcm=%2$d, percent=%3$s%%</string>
+    <string name="util_btn_cache_clear">CacheUtil 清空缓存</string>
     <string name="util_status_cache_demo">key=%1$s, value=%2$s, size=%3$d</string>
-    <string name="util_status_benchmark_demo">sum=%1$d, costMs=%2$d</string>
-    <string name="util_status_boolean_demo">value=%1$s, int=%2$d</string>
-    <string name="util_status_map_demo">lang=%1$s, size=%2$d, merged=%3$s</string>
-    <string name="util_status_url_param_demo">url=%1$s, params=%2$s</string>
-    <string name="util_status_version_demo">compare=%1$d, atLeast=%2$s, current=%3$s, target=%4$s</string>
-    <string name="util_status_mask_demo">phone=%1$s, email=%2$s</string>
-    <string name="util_status_case_demo">snake=%1$s, camel=%2$s</string>
-    <string name="util_status_hex_demo">hex=%1$s, decoded=%2$s</string>
-    <string name="util_status_checksum_demo">crc32=%1$s, adler32=%2$s</string>
-    <string name="util_status_decimal_demo">add=%1$s, divide=%2$s</string>
-    <string name="util_status_template_demo">keys=%1$s, text=%2$s</string>
-    <string name="util_status_file_path_demo">name=%1$s, ext=%2$s, parent=%3$s</string>
-    <string name="util_status_date_range_demo">start=%1$s, end=%2$s, inToday=%3$s</string>
-    <string name="util_status_file_demo">write=%1$s, read=%2$s, size=%3$s</string>
-    <string name="util_status_file_clear_demo">clearDir=%1$s</string>
-
-    <!-- NetActivity full status texts -->
-    <string name="status_default">状态</string>
-    <string name="post_success_fmt">POST 成功: %1$s</string>
-    <string name="post_business_fail_fmt">POST 业务失败: %1$d, %2$s</string>
-    <string name="custom_header_success_fmt">自定义 Header 请求成功: %1$s</string>
-    <string name="custom_header_tech_fail_fmt">自定义 Header 技术失败: %1$s</string>
-    <string name="custom_header_business_fail_fmt">自定义 Header 业务失败: %1$d, %2$s</string>
-    <string name="timeout_success_fmt">超时调用返回: %1$s</string>
-    <string name="timeout_tech_fail_fmt">超时调用技术失败: %1$s</string>
-    <string name="timeout_business_fail_fmt">超时调用业务失败: %1$d, %2$s</string>
-    <string name="pay_success_fmt">Pay 成功: %1$s</string>
-    <string name="pay_tech_fail_fmt">Pay 技术失败: %1$s</string>
-    <string name="pay_business_fail_fmt">Pay 业务失败: %1$d, %2$s</string>
-    <string name="raw_success_size">Raw 成功: size=%1$d</string>
-    <string name="raw_business_msg_fmt">Raw 业务失败: %1$d, %2$s</string>
-    <string name="download_cancelled">下载已取消</string>
-    <string name="status_model_in_progress">status 返回模型示例中...</string>
-    <string name="status_model_success_fmt">status 模型成功: %1$s</string>
-    <string name="status_model_tech_fail_fmt">status 模型技术失败: %1$s</string>
-    <string name="status_model_business_fail_fmt">status 模型业务失败: %1$d, %2$s</string>
-    <string name="retry_tech_fail_fmt">Retry 技术失败: %1$s</string>
-    <string name="retry_business_fail_fmt">Retry 业务失败: %1$d, %2$s</string>
-    <string name="poll_business_with_msg_fmt">轮询业务失败: %1$d, %2$s</string>
-
-    <!-- WebSocket demo UI strings -->
-    <string name="ws_title">WebSocket 示例</string>
-    <string name="ws_desc">演示：连接/断开、文本/二进制发送、心跳、重连、离线补发</string>
-    <string name="ws_endpoint_hint">测试地址: wss://ws.postman-echo.com/raw</string>
-    <string name="ws_input_hint">输入要发送的文本</string>
-    <string name="ws_section_multi">多连接管理</string>
-    <string name="ws_section_default">单连接快捷API（无需指定connectionId）</string>
-    <string name="ws_log_title">日志输出：</string>
-    <string name="ws_btn_connect">连接</string>
-    <string name="ws_btn_reconnect">手动重连</string>
-    <string name="ws_btn_disconnect">断开</string>
-    <string name="ws_btn_send_text">发送文本</string>
-    <string name="ws_btn_send_binary">发送二进制</string>
-    <string name="ws_btn_connect_default">连接默认</string>
-    <string name="ws_btn_send_default">默认连接发送</string>
-    <string name="ws_toast_input_required">请输入要发送的文本</string>
-    <string name="pay_in_progress">Pay 接口请求中...</string>
-    <string name="retry_success_fmt">Retry 成功: %1$s</string>
-    <string name="ws_intro">演示功能：状态回调、心跳、重连、离线补发、回调主线程、单连接快捷API</string>
-
-    <!-- WebSocket log templates -->
-    <string name="ws_log_manual_reconnect_triggered">触发手动重连</string>
-    <string name="ws_log_manual_reconnect_failed">手动重连失败（当前非断开状态）</string>
-    <string name="ws_log_disconnected_permanent">主动断开连接（永久）</string>
-    <string name="ws_log_send_text_ok">发送文本：%1$s</string>
-    <string name="ws_log_send_text_fail">发送失败：%1$s</string>
-    <string name="ws_log_send_binary_ok">发送二进制：%1$d bytes</string>
-    <string name="ws_log_send_binary_fail">发送失败：二进制（%1$d bytes）</string>
-    <string name="ws_log_connected">连接成功：%1$s</string>
-    <string name="ws_log_state_changed">状态变化：%1$s -> %2$s</string>
-    <string name="ws_log_receive_text">收到文本：%1$s</string>
-    <string name="ws_log_receive_binary">收到二进制：%1$d bytes</string>
-    <string name="ws_log_closing">连接关闭中：%1$d %2$s</string>
-    <string name="ws_log_closed">连接已关闭：%1$d %2$s</string>
-    <string name="ws_log_failure">连接失败：%1$s</string>
-    <string name="ws_log_reconnecting">触发重连：第%1$d 次</string>
-    <string name="ws_log_heartbeat_timeout">心跳超时：触发断开</string>
-    <string name="ws_log_connect_start">开始连接：%1$s</string>
-    <string name="ws_log_default_send_ok">[默认连接] 发送：%1$s</string>
-    <string name="ws_log_default_send_fail">[默认连接] 发送失败：%1$s</string>
-    <string name="ws_log_default_connected">[默认连接] 连接成功</string>
-    <string name="ws_log_default_state_changed">[默认连接] 状态变化：%1$s -> %2$s</string>
-    <string name="ws_log_default_receive_text">[默认连接] 收到文本：%1$s</string>
-    <string name="ws_log_default_receive_binary">[默认连接] 收到二进制：%1$d bytes</string>
-    <string name="ws_log_default_closed">[默认连接] 连接已关闭：%1$d %2$s</string>
-    <string name="ws_log_default_failure">[默认连接] 连接失败：%1$s</string>
-    <string name="ws_log_default_reconnecting">[默认连接] 触发重连：第%1$d 次</string>
-    <string name="ws_log_default_connect_start">[默认连接] 开始连接：%1$s</string>
+    <string name="util_status_cache_clear">缓存已清空，size=%1$d</string>
+    <string name="util_btn_screen_util">ScreenUtil 演示（屏幕/系统栏）</string>
+    <string name="util_status_screen_demo">screen=%1$dx%2$d, statusBar=%3$dpx, navBar=%4$dpx
+orientation=%5$s
+%6$s</string>
+    <string name="util_btn_benchmark_util">BenchmarkUtil 演示</string>
+    <string name="util_btn_screen_available">ScreenUtil 演示（可用内容区）</string>
+    <string name="util_status_screen_available">screen=%1$dx%2$d, available=%3$dx%4$d</string>
 
 </resources>
 

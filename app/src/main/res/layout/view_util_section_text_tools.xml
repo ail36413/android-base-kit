@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    app:cardBackgroundColor="@color/card_bg"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppDemoSectionTitleText"
+            android:text="@string/util_subsection_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppDemoSectionHintText"
+            android:text="@string/util_subsection_text_desc" />
+
+        <Button
+            android:id="@+id/btn_json_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_json_util" />
+
+        <Button
+            android:id="@+id/btn_encode_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_encode_util" />
+
+        <Button
+            android:id="@+id/btn_encrypt_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_encrypt_util" />
+
+        <Button
+            android:id="@+id/btn_string_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_string_util" />
+
+        <Button
+            android:id="@+id/btn_number_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_number_util" />
+
+        <Button
+            android:id="@+id/btn_collection_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_collection_util" />
+
+        <Button
+            android:id="@+id/btn_regex_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_regex_util" />
+
+        <Button
+            android:id="@+id/btn_boolean_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_boolean_util" />
+
+        <Button
+            android:id="@+id/btn_map_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_map_util" />
+
+        <Button
+            android:id="@+id/btn_url_param_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_url_param_util" />
+
+        <Button
+            android:id="@+id/btn_version_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_version_util" />
+
+        <Button
+            android:id="@+id/btn_mask_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_mask_util" />
+
+        <Button
+            android:id="@+id/btn_case_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_case_util" />
+
+        <Button
+            android:id="@+id/btn_hex_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_hex_util" />
+
+        <Button
+            android:id="@+id/btn_checksum_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_checksum_util" />
+
+        <Button
+            android:id="@+id/btn_decimal_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_decimal_util" />
+
+        <Button
+            android:id="@+id/btn_template_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_template_util" />
+
+        <Button
+            android:id="@+id/btn_file_path_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_file_path_util" />
+
+        <Button
+            android:id="@+id/btn_date_range_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_date_range_util" />
+
+        <Button
+            android:id="@+id/btn_math_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_math_util" />
+
+        <Button
+            android:id="@+id/btn_random_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_random_util" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

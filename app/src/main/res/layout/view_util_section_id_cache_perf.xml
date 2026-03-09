@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    app:cardBackgroundColor="@color/card_bg"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppDemoSectionTitleText"
+            android:text="@string/util_subsection_id_cache_perf" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppDemoSectionHintText"
+            android:text="@string/util_subsection_id_cache_perf_desc" />
+
+        <Button
+            android:id="@+id/btn_id_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_id_util" />
+
+        <Button
+            android:id="@+id/btn_retry_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_retry_util" />
+
+        <Button
+            android:id="@+id/btn_cache_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_cache_util" />
+
+        <Button
+            android:id="@+id/btn_cache_clear_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_cache_clear" />
+
+        <Button
+            android:id="@+id/btn_benchmark_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_benchmark_util" />
+
+        <Button
+            android:id="@+id/btn_file_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_file_util" />
+
+        <Button
+            android:id="@+id/btn_uri_file_util_demo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_uri_file_util" />
+
+        <Button
+            android:id="@+id/btn_file_util_clear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/util_btn_file_util_clear" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

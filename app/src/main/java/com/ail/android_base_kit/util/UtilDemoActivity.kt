@@ -1,7 +1,7 @@
 package com.ail.android_base_kit.util
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -10,20 +10,26 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ail.android_base_kit.R
+import com.ail.android_base_kit.ui.bindToolbar
 import com.ail.lib_util.click.ClickUtil
 import com.ail.lib_util.device.AppInfoUtil
 import com.ail.lib_util.device.ClipboardUtil
 import com.ail.lib_util.device.IntentUtil
 import com.ail.lib_util.device.NetworkUtil
+import com.ail.lib_util.device.NetStateListenerUtil
 import com.ail.lib_util.device.PermissionUtil
+import com.ail.lib_util.log.CrashUtil
 import com.ail.lib_util.log.LogUtil
 import com.ail.lib_util.storage.CacheUtil
 import com.ail.lib_util.storage.FilePathUtil
 import com.ail.lib_util.storage.FileUtil
 import com.ail.lib_util.storage.KvUtil
+import com.ail.lib_util.storage.UriFileUtil
 import com.ail.lib_util.thread.RetryUtil
 import com.ail.lib_util.thread.ThreadUtil
 import com.ail.lib_util.text.BooleanUtil
@@ -56,11 +62,19 @@ import com.ail.lib_util.ui.KeyboardUtil
 import com.ail.lib_util.ui.ResourceUtil
 import com.ail.lib_util.ui.ToastUtil
 import com.ail.lib_util.ui.ViewUtil
+import com.ail.lib_util.ui.ScreenUtil
 
 class UtilDemoActivity : AppCompatActivity() {
 
-    private companion object {
-        const val REQUEST_CODE_PERMISSION_DEMO = 1001
+    companion object {
+        const val EXTRA_MODE = "util_mode"
+        const val MODE_ALL = "all"
+        const val MODE_BASIC = "basic"
+        const val MODE_TEXT = "text"
+        const val MODE_STORAGE_PERF = "storage_perf"
+
+        const val PREF_UTIL_DEMO = "util_demo_prefs"
+        const val KEY_LAST_MODE = "last_mode"
     }
 
     private lateinit var tvStatus: TextView
@@ -68,10 +82,26 @@ class UtilDemoActivity : AppCompatActivity() {
     private lateinit var etValue: EditText
     private lateinit var etNamespace: EditText
 
+    private var netStateListenerToken: String? = null
+    private var pendingPermissionRequest: Array<String> = emptyArray()
+
+    private val permissionLauncher =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            val denied = pendingPermissionRequest.filter { permission -> result[permission] != true }
+            val allGranted = denied.isEmpty()
+            setStatus(
+                "PermissionUtil",
+                getString(R.string.util_status_permission_result, allGranted.toString(), denied.joinToString()),
+            )
+            pendingPermissionRequest = emptyArray()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_util_demo)
+
+        bindToolbar(R.id.toolbar_util)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.util_root)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -83,6 +113,21 @@ class UtilDemoActivity : AppCompatActivity() {
         etKey = findViewById(R.id.et_key)
         etValue = findViewById(R.id.et_value)
         etNamespace = findViewById(R.id.et_namespace)
+
+        val mode = normalizeMode(intent?.getStringExtra(EXTRA_MODE))
+        supportActionBar?.title = getString(modeTitleRes(mode))
+        applyDisplayMode(mode)
+        setStatus("Mode", getString(modeHintRes(mode)))
+        persistLastMode(mode)
+
+        findViewById<Button>(R.id.btn_status_copy).setOnClickListener {
+            val statusText = tvStatus.text?.toString().orEmpty()
+            ClipboardUtil.copyText(statusText)
+            setStatus("Status", getString(R.string.util_status_copied))
+        }
+        findViewById<Button>(R.id.btn_status_clear).setOnClickListener {
+            clearStatus()
+        }
 
         findViewById<Button>(R.id.btn_put_string).setOnClickListener {
             val key = readKey() ?: return@setOnClickListener
@@ -206,6 +251,42 @@ class UtilDemoActivity : AppCompatActivity() {
             setStatus("DisplayUtil", getString(R.string.util_status_display_result, dpPx, spPx, pxDp))
         }
 
+        findViewById<Button>(R.id.btn_screen_util_demo).setOnClickListener {
+            val width = ScreenUtil.screenWidthPx(this)
+            val height = ScreenUtil.screenHeightPx(this)
+            val statusBar = ScreenUtil.statusBarHeight(this)
+            val navBar = ScreenUtil.navigationBarHeight(this)
+            val orientation = if (ScreenUtil.isLandscape(this)) "landscape" else "portrait"
+            val insets = ScreenUtil.systemBarInsets(findViewById(R.id.util_root))
+            val insetsText = if (insets == null) {
+                "insets=unavailable"
+            } else {
+                "insets(top=${insets.statusBarTop}, bottom=${insets.navigationBarBottom}, left=${insets.left}, right=${insets.right})"
+            }
+            setStatus(
+                "ScreenUtil",
+                getString(R.string.util_status_screen_demo, width, height, statusBar, navBar, "$orientation, $insetsText"),
+            )
+        }
+
+        findViewById<Button>(R.id.btn_screen_available_demo).setOnClickListener {
+            val root = findViewById<View>(R.id.util_root)
+            val screenWidth = ScreenUtil.screenWidthPx(this)
+            val screenHeight = ScreenUtil.screenHeightPx(this)
+            val availableWidth = ScreenUtil.availableContentWidthPx(root, this)
+            val availableHeight = ScreenUtil.availableContentHeightPx(root, this)
+            setStatus(
+                "ScreenUtil",
+                getString(
+                    R.string.util_status_screen_available,
+                    screenWidth,
+                    screenHeight,
+                    availableWidth,
+                    availableHeight,
+                ),
+            )
+        }
+
         findViewById<Button>(R.id.btn_keyboard_show).setOnClickListener {
             KeyboardUtil.show(etValue)
             setStatus("KeyboardUtil", getString(R.string.util_status_keyboard_show))
@@ -221,6 +302,30 @@ class UtilDemoActivity : AppCompatActivity() {
             val connected = NetworkUtil.isConnected()
             val metered = NetworkUtil.isMetered()
             setStatus("NetworkUtil", getString(R.string.util_status_network, "$connected, metered=$metered", type))
+        }
+
+        findViewById<Button>(R.id.btn_net_state_listener_demo).setOnClickListener {
+            val token = netStateListenerToken
+            if (token.isNullOrBlank()) {
+                val newToken = NetStateListenerUtil.register { connected, type ->
+                    runOnUiThread {
+                        setStatus(
+                            "NetStateListenerUtil",
+                            getString(R.string.util_status_net_state_changed, connected.toString(), type.name),
+                        )
+                    }
+                }
+                if (newToken.isBlank()) {
+                    setStatus("NetStateListenerUtil", getString(R.string.util_status_net_state_listener_fail))
+                } else {
+                    netStateListenerToken = newToken
+                    setStatus("NetStateListenerUtil", getString(R.string.util_status_net_state_listener_started))
+                }
+            } else {
+                NetStateListenerUtil.unregister(token)
+                netStateListenerToken = null
+                setStatus("NetStateListenerUtil", getString(R.string.util_status_net_state_listener_stopped))
+            }
         }
 
         findViewById<Button>(R.id.btn_app_info_demo).setOnClickListener {
@@ -240,7 +345,8 @@ class UtilDemoActivity : AppCompatActivity() {
             if (denied.isEmpty()) {
                 setStatus("PermissionUtil", getString(R.string.util_status_permission_granted))
             } else {
-                PermissionUtil.request(this, REQUEST_CODE_PERMISSION_DEMO, *denied.toTypedArray())
+                pendingPermissionRequest = denied.toTypedArray()
+                permissionLauncher.launch(pendingPermissionRequest)
                 setStatus("PermissionUtil", getString(R.string.util_status_permission_requesting, denied.joinToString()))
             }
         }
@@ -267,7 +373,7 @@ class UtilDemoActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_view_util_demo).setOnClickListener {
-            val target = findViewById<Button>(R.id.btn_debounce_demo)
+            val target = debounceButton
             val nextVisible = target.visibility != View.VISIBLE
             ViewUtil.setVisible(target, nextVisible)
             setStatus("ViewUtil", getString(if (nextVisible) R.string.util_status_view_visible else R.string.util_status_view_gone))
@@ -357,6 +463,20 @@ class UtilDemoActivity : AppCompatActivity() {
             setStatus("FileUtil", getString(R.string.util_status_file_demo, (writeOk && appendOk).toString(), message, size))
         }
 
+        findViewById<Button>(R.id.btn_uri_file_util_demo).setOnClickListener {
+            val uriText = etValue.text.toString().trim()
+            val uri = if (uriText.isNotEmpty()) {
+                uriText.toUri()
+            } else {
+                val sample = FileUtil.file("demo.txt")
+                Uri.fromFile(sample)
+            }
+            val name = UriFileUtil.fileName(uri)
+            val mime = UriFileUtil.mimeType(uri)
+            val size = UriFileUtil.size(uri)
+            setStatus("UriFileUtil", getString(R.string.util_status_uri_file_demo, name, mime.ifBlank { "<unknown>" }, size))
+        }
+
         findViewById<Button>(R.id.btn_file_util_clear).setOnClickListener {
             val beforeCount = FileUtil.listFiles().size
             val cleared = FileUtil.clearDir()
@@ -369,6 +489,20 @@ class UtilDemoActivity : AppCompatActivity() {
             LogUtil.w("UtilDemo warn log")
             LogUtil.e("UtilDemo error log")
             setStatus("LogUtil", getString(R.string.util_status_log_done))
+        }
+
+        findViewById<Button>(R.id.btn_crash_util_demo).setOnClickListener {
+            if (!CrashUtil.isInstalled()) {
+                CrashUtil.install(CrashUtil.Config()) { info ->
+                    LogUtil.e("CrashUtil", "captured crash file=${info.file?.name.orEmpty()}")
+                }
+            }
+            val file = CrashUtil.recordHandled(IllegalStateException("demo handled crash"))
+            val count = CrashUtil.listCrashFiles().size
+            setStatus(
+                "CrashUtil",
+                getString(R.string.util_status_crash_util_demo, file?.name.orEmpty(), count),
+            )
         }
 
         findViewById<Button>(R.id.btn_string_util_demo).setOnClickListener {
@@ -461,6 +595,11 @@ class UtilDemoActivity : AppCompatActivity() {
             val readBack = CacheUtil.get<String>(key).orEmpty()
             val size = CacheUtil.size()
             setStatus("CacheUtil", getString(R.string.util_status_cache_demo, key, readBack, size))
+        }
+
+        findViewById<Button>(R.id.btn_cache_clear_demo).setOnClickListener {
+            CacheUtil.clear()
+            setStatus("CacheUtil", getString(R.string.util_status_cache_clear, CacheUtil.size()))
         }
 
         findViewById<Button>(R.id.btn_benchmark_util_demo).setOnClickListener {
@@ -571,21 +710,16 @@ class UtilDemoActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != REQUEST_CODE_PERMISSION_DEMO) return
-        val allGranted = PermissionUtil.allGranted(grantResults)
-        val denied = permissions.filterIndexed { index, _ ->
-            grantResults.getOrNull(index) != PackageManager.PERMISSION_GRANTED
-        }
-        setStatus(
-            "PermissionUtil",
-            getString(R.string.util_status_permission_result, allGranted.toString(), denied.joinToString()),
-        )
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        netStateListenerToken?.let { NetStateListenerUtil.unregister(it) }
+        netStateListenerToken = null
     }
 
     private fun readKey(): String? {
@@ -607,6 +741,81 @@ class UtilDemoActivity : AppCompatActivity() {
     }
 
     private fun setStatus(scope: String, message: String) {
-        tvStatus.text = "[$scope] $message"
+        tvStatus.text = getString(R.string.util_status_scope_message, scope, message)
+    }
+
+    private fun clearStatus() {
+        tvStatus.text = getString(R.string.util_status_default)
+    }
+
+    private fun applyDisplayMode(mode: String?) {
+        val allCards = listOf(
+            R.id.card_util_intro,
+            R.id.card_util_input,
+            R.id.card_util_kv,
+            R.id.card_util_click_ui,
+            R.id.card_util_system,
+            R.id.card_util_log,
+            R.id.card_util_extra,
+            R.id.card_util_text_tools,
+            R.id.card_util_id_cache,
+        )
+
+        val visibleCards = when (mode) {
+            MODE_BASIC -> listOf(
+                R.id.card_util_intro,
+                R.id.card_util_input,
+                R.id.card_util_kv,
+                R.id.card_util_click_ui,
+                R.id.card_util_system,
+                R.id.card_util_log,
+                R.id.card_util_extra,
+            )
+
+            MODE_TEXT -> listOf(
+                R.id.card_util_intro,
+                R.id.card_util_text_tools,
+            )
+
+            MODE_STORAGE_PERF -> listOf(
+                R.id.card_util_intro,
+                R.id.card_util_input,
+                R.id.card_util_kv,
+                R.id.card_util_id_cache,
+            )
+
+            else -> allCards
+        }
+
+        allCards.forEach { id ->
+            findViewById<View>(id)?.visibility = if (visibleCards.contains(id)) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun modeTitleRes(mode: String?): Int = when (mode) {
+        MODE_BASIC -> R.string.util_mode_title_basic
+        MODE_TEXT -> R.string.util_mode_title_text
+        MODE_STORAGE_PERF -> R.string.util_mode_title_storage_perf
+        else -> R.string.util_mode_title_all
+    }
+
+    private fun modeHintRes(mode: String?): Int = when (mode) {
+        MODE_BASIC -> R.string.util_mode_hint_basic
+        MODE_TEXT -> R.string.util_mode_hint_text
+        MODE_STORAGE_PERF -> R.string.util_mode_hint_storage_perf
+        else -> R.string.util_mode_hint_all
+    }
+
+    private fun persistLastMode(mode: String) {
+        getSharedPreferences(PREF_UTIL_DEMO, MODE_PRIVATE).edit {
+            putString(KEY_LAST_MODE, mode)
+        }
+    }
+
+    private fun normalizeMode(mode: String?): String {
+        return when (mode) {
+            MODE_BASIC, MODE_TEXT, MODE_STORAGE_PERF, MODE_ALL -> mode
+            else -> MODE_ALL
+        }
     }
 }

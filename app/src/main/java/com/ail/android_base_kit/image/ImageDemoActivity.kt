@@ -13,6 +13,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ail.android_base_kit.R
+import com.ail.android_base_kit.ui.bindToolbar
 import com.ail.lib_image.ImageLoadCallback
 import com.ail.lib_image.ImageLoaderDefaults
 import com.ail.lib_image.ImageLoaderUtils
@@ -66,6 +67,8 @@ class ImageDemoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_loader_demo)
+
+        bindToolbar(R.id.toolbar_image)
 
         val url = "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
         imageNormal = findViewById(R.id.imageNormal)
@@ -295,6 +298,11 @@ class ImageDemoActivity : AppCompatActivity() {
         }
 
         setupImageGlobalDefaultsSwitch()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     private fun setupRecyclerReuseDemo() {
